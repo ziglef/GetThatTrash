@@ -1,6 +1,3 @@
-/**
- * 
- */
 package gui;
 
 import java.awt.*;
@@ -8,11 +5,7 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.Border;
 
-/**
- * @author Tiago
- *
- */
-public class Menu extends JFrame{
+class Menu extends JFrame{
 
 	private static final long serialVersionUID = 1L;
 	private static int gridSize = 10;
@@ -34,11 +27,11 @@ public class Menu extends JFrame{
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {
                 JButton button = new JButton();
-                button.setOpaque(false);
                 button.setContentAreaFilled(false);
-                button.setBorderPainted(true);
-                button.setMargin(new Insets(0,0,0,0));
-                button.setIcon(new ImageIcon("resources/assets/images/roadTile2.png"));
+                button.setBorderPainted(false);
+                // Right border = -1 to compensate for a swing bug
+                button.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, -1));
+                button.setIcon(new ImageIcon("resources/assets/images/terrainTile3.png"));
                 buttonPanel.add(button);
             }
         }
