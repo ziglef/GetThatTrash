@@ -34,11 +34,17 @@ public class Menu extends JFrame{
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {
                 JButton button = new JButton();
-                button.setOpaque(false);
-                button.setContentAreaFilled(false);
-                button.setBorderPainted(true);
+                //de-spacing:
+                button.setBorder(null);
+                button.setBorderPainted(false);
                 button.setMargin(new Insets(0,0,0,0));
-                button.setIcon(new ImageIcon("resources/assets/images/roadTile2.png"));
+
+                //other stuff
+                button.setFocusPainted(false);
+                button.setContentAreaFilled(false);
+                button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+                button.setIcon(new ImageIcon("resources/assets/images/terrainTile2.png"));
                 buttonPanel.add(button);
             }
         }
