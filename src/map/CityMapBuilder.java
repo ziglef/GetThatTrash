@@ -3,18 +3,21 @@ package map;
 import javafx.util.Pair;
 
 import java.io.*;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 public class CityMapBuilder extends MapBuilder {
 
+    Map<String, Vertex> vertexMap;
+
     public CityMapBuilder(File f) {
         super(f);
+        vertexMap = new HashMap<>();
 
         BufferedReader fis = null;
 
         try {
-            Map<String, Vertex> vertexMap = new HashMap<>();
             fis = new BufferedReader(new FileReader(f));
 
             if( this.getVerticesRef().size() > 0 ){
@@ -53,5 +56,12 @@ public class CityMapBuilder extends MapBuilder {
                 e.printStackTrace();
             }
         }
+    }
+
+    public Vertex getVertexByName(String key) {
+        return this.vertexMap.get(key);
+    }
+    public Collection<Vertex> getVertices() {
+        return this.vertexMap.values();
     }
 }
