@@ -2,7 +2,7 @@
 
 v1:
 coords:0,4
-img:roadTile27.png
+img:roadTile19.png
 end
 
 v2:
@@ -102,7 +102,7 @@ end
 
 v21:
 coords:5,9
-img:roadTile6.png
+img:roadTile26.png
 end
 
 v22:
@@ -162,15 +162,15 @@ end
 
 v33:
 coords:9,3
-img:roadTile27.png
+img:roadTile18.png
 end
 
 v34:
 coords:9,5
-img:roadTile27.png
+img:roadTile18.png
 end
 
 v35:
 coords:9,6
-img:roadTile27.png
+img:roadTile18.png
 end

@@ -58,6 +58,14 @@ public class CityMapBuilder extends MapBuilder {
         }
     }
 
+    public Vertex getVertexByCoords(int x, int y){
+        for( Vertex v : vertexMap.values() ){
+            if( v.isAt(x,y) )
+                return v;
+        }
+        return null;
+    }
+
     public Vertex getVertexByName(String key) {
         return this.vertexMap.get(key);
     }

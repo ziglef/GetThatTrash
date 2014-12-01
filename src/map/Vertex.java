@@ -59,6 +59,12 @@ public class Vertex {
         this.y = y;
     }
 
+    public boolean isAt(int x, int y){
+        if( this.x == x && this.y == y )
+            return true;
+        return false;
+    }
+
     public String toString(){
         String s = "";
 
