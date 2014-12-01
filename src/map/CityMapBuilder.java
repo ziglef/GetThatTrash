@@ -65,11 +65,31 @@ public class CityMapBuilder extends MapBuilder {
         }
         return null;
     }
-
     public Vertex getVertexByName(String key) {
         return this.vertexMap.get(key);
     }
     public Collection<Vertex> getVertices() {
         return this.vertexMap.values();
     }
+    public boolean checkNeighborsFor(int x, int y){
+        // left
+        if( getVertexByCoords(x-1, y) != null )
+            return true;
+
+        // right
+        if( getVertexByCoords(x+1, y) != null )
+            return true;
+
+        // top
+        if( getVertexByCoords(x, y-1) != null )
+            return true;
+
+        // bottom
+        if( getVertexByCoords(x, y+1) != null )
+            return true;
+
+        return false;
+    }
+
+    //TODO ver se o vertice vizinho e estrada
 }
