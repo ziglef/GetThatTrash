@@ -23,21 +23,11 @@ public class InterfaceAgent{
     /*------------------------------
         Declarations
     *-----------------------------*/
-    @Agent
-    protected BDIAgent agent;
-
-    @Belief
-    protected Position[] truckLoc, containerLoc, depositLoc;
-
-    @Belief
-    Interface graphicInt;
-
-    @Belief
-    boolean pause = false;
-
-    @Belief
-    public static final long SLEEP = 50;
-
+    @Agent protected BDIAgent agent;
+    @Belief protected Position[] truckLoc, containerLoc, depositLoc;
+    @Belief Interface graphicInt;
+    @Belief boolean pause = false;
+    @Belief public static final long SLEEP = 50;
     public static InterfaceAgent intAgent;
 
     /*------------------------------
@@ -58,7 +48,6 @@ public class InterfaceAgent{
             System.out.println("Estou a correr a interface pelo body do agente!");
             intAgent = this;
         } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         GarbageCollector.getInstance().setInterface(graphicInt);

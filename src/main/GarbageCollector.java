@@ -91,9 +91,9 @@ public class GarbageCollector {
            // truck.togglePause();
     }
 
-    /*public boolean getPause(){
+    public boolean getPause(){
         return graphicInt == null ? false : graphicInt.getPause();
-    }*/
+    }
 
     private boolean getMemory(){
         return memory;
@@ -103,4 +103,7 @@ public class GarbageCollector {
         this.memory = memory;
     }
 
+    public void addTruckAgent(TruckAgent truckAgent) {
+        truckAgents.add(truckAgent);
+    }
 }

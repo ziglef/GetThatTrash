@@ -149,6 +149,16 @@ public class Interface extends JFrame{
         });
     }
 
+    public boolean getPause(){
+
+        //TODO Criar um botao para cada um das opções
+        /*if (pauseBTN != null) {
+            return this.cb_pause.isSelected();
+        }
+        return false;*/
+        return true;
+    }
+
 
     public static void main(String[] args){
 
