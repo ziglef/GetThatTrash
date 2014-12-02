@@ -3,24 +3,28 @@ package gui;
 import jadex.bridge.IExternalAccess;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.io.FileNotFoundException;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 
-public class Interface extends JFrame{
+public class Interface extends JFrame implements ActionListener{
 
 	private static final long serialVersionUID = 1L;
 	private static int gridSize = 10;
     private JCheckBox communicationCB;
     private JCheckBox memoryCB;
+    private JButton newBTN, pauseBTN, helpBTN, exitBTN;
     private JRadioButton[] radioComponent;
     private ButtonGroup radioComponentGroup;
     private JRadioButton[] radioComponentType;
     private ButtonGroup radioComponentTypeGroup;
     private JPanel optPane2;
     private GridCity city;
+    private Interface graphInt;
 
     public Interface() throws FileNotFoundException{
         //super("Garbage Collection");
@@ -74,7 +78,7 @@ public class Interface extends JFrame{
             }
         }*/
 
-        city = new GridCity("resources/graphs/City4");
+        city = new GridCity("resources/graphs/City2");
         contentPane.add(city, BorderLayout.CENTER);
 
         //contentPane.add(buttonPanel, BorderLayout.CENTER);
@@ -82,18 +86,21 @@ public class Interface extends JFrame{
         optPane2 = new JPanel();
         optPane2.setLayout(new GridLayout(0,1));
         optPane2.setBorder(BorderFactory.createTitledBorder("Options"));
-        for(int i = 0; i < 4;i++){
-        	JButton button = new JButton();
 
-        	switch (i) {
-            case 0: button.setText("New");break;
-            case 1: button.setText("Pause");break;
-            case 2: button.setText("Help");break;
-            case 3: button.setText("Exit");break;
-			default:break;
-			}
-            optPane2.add(button);
-        }
+        newBTN = new JButton("New");
+        pauseBTN = new JButton("Pause");
+        helpBTN = new JButton("Help");
+        exitBTN = new JButton("Exit");
+
+        optPane2.add(newBTN);
+        newBTN.addActionListener(this);
+        optPane2.add(pauseBTN);
+        pauseBTN.addActionListener(this);
+        optPane2.add(helpBTN);
+        helpBTN.addActionListener(this);
+        optPane2.add(exitBTN);
+        exitBTN.addActionListener(this);
+
         JLabel label = new JLabel("_________________");
         optPane2.add(label);
         label = new JLabel("Component:");
@@ -174,4 +181,25 @@ public class Interface extends JFrame{
             }
         });
     }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+        JButton clicked = (JButton) e.getSource();
+
+        if(clicked == newBTN){
+            ChooseCityGUI dialog = new ChooseCityGUI();
+            dialog.setVisible(true);
+
+            city.changeGraph(dialog.getCity());
+
+            
+        }else if(clicked == exitBTN){
+            int option = JOptionPane.showConfirmDialog(null, "Are you sure?", "Exit application", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+            if(option == JOptionPane.YES_OPTION)
+                System.exit(0);
+        }
+    }
+
 }

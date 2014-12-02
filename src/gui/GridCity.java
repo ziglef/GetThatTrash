@@ -78,6 +78,20 @@ public class GridCity extends JPanel {
 
         if( !wasInit )
             initThis();
+        else{
+            int thisWidth = getWidth();
+            int thisHeight = getHeight();
+
+            int stupidBorderHeight = thisHeight - ((thisHeight / this.gridSize) * this.gridSize);
+            int stupidBorderWidth = thisWidth - ((thisWidth / this.gridSize) * this.gridSize);
+
+            thisWidth -= stupidBorderWidth;
+            thisHeight -= stupidBorderHeight;
+
+            this.width = thisWidth / this.gridSize;
+            this.height = thisHeight / this.gridSize;
+
+        }
 
         cleanCity(g);
 
