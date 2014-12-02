@@ -191,9 +191,9 @@ public class Interface extends JFrame implements ActionListener{
             ChooseCityGUI dialog = new ChooseCityGUI();
             dialog.setVisible(true);
 
-            city.changeGraph(dialog.getCity());
+            city.changeGraph("resources/graphs/"+dialog.getCity());
 
-            
+
         }else if(clicked == exitBTN){
             int option = JOptionPane.showConfirmDialog(null, "Are you sure?", "Exit application", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
