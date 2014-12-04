@@ -3,6 +3,7 @@ package agents;
 import gui.Interface;
 import jadex.bdiv3.BDIAgent;
 import jadex.bdiv3.annotation.*;
+import jadex.bridge.IComponentIdentifier;
 import jadex.bridge.service.*;
 import jadex.bridge.service.search.SServiceProvider;
 import jadex.bridge.service.types.cms.*;
@@ -12,7 +13,9 @@ import main.GarbageCollector;
 import main.Position;
 import plans.UpdateMap;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 
 @Agent
 @Plans({ @Plan(trigger = @Trigger(goals = InterfaceAgent.GoalUpdateCity.class), body = @Body(UpdateMap.class)) })
@@ -35,14 +38,6 @@ public class InterfaceAgent{
     *-----------------------------*/
     @AgentBody
     public void body(){
-        /*intAgent = this;
-        graphicInt = new Interface(agent.getExternalAccess());
-        GarbageCollector.getInstance().setInterface(graphicInt);
-        if(agent == null){
-            System.out.println("Agent is null");
-        }
-        agent.dispatchTopLevelGoal(new GoalUpdateCity()).get();*/
-
         try {
             graphicInt = new Interface();
             System.out.println("Estou a correr a interface pelo body do agente!");
@@ -52,7 +47,6 @@ public class InterfaceAgent{
         }
         GarbageCollector.getInstance().setInterface(graphicInt);
         agent.dispatchTopLevelGoal(new GoalUpdateCity()).get();
-
     }
 
     /*-----------------------------
@@ -70,10 +64,43 @@ public class InterfaceAgent{
         Methods
      *---------------------------*/
     public void deployAgent(String path, jadex.bridge.service.types.cms.CreationInfo info){
-        ThreadSuspendable t = new ThreadSuspendable();
 
-        IComponentManagementService icms = SServiceProvider.getService(agent.getServiceProvider(), IComponentManagementService.class, RequiredServiceInfo.SCOPE_PLATFORM).get(t);
-        icms.createComponent(path, info).getFirstResult(t);
+        ThreadSuspendable sus = new ThreadSuspendable();
+
+        /**
+         * General interface for components that the container can execute.
+         */
+
+        if(agent == null){
+            System.out.println("AGENT NULL");
+        }
+
+        IServiceProvider sp = agent.getServiceProvider();
+
+        if(sp == null){
+            System.out.println("SP IS NULL");
+        }
+        IComponentManagementService cms = null;
+        try{
+            cms = SServiceProvider.getService(sp, IComponentManagementService.class,
+                    RequiredServiceInfo.SCOPE_PLATFORM).get(sus);
+        }catch (NullPointerException e){
+            e.printStackTrace();
+        }
+
+
+        System.out.println("I'm HERE!");
+
+        try {
+            BufferedReader fis = new BufferedReader(new FileReader("../../out/production/AIAD/agents/TruckAgent.class"));
+        } catch (FileNotFoundException e1) {
+            System.out.println("NAO ENCONTREI FILE!");
+            e1.printStackTrace();
+        }
+
+
+        IComponentIdentifier ici = cms.createComponent("../../out/production/AIAD/agents/TruckAgent.class", info).getFirstResult(sus);
+        System.out.println("started: " + ici);
     }
 
     public void updateCity(){
@@ -84,8 +111,11 @@ public class InterfaceAgent{
         Position[] trucksLoc_aux = GarbageCollector.getInstance().getTrucksLoc();
 
         if(truckLoc!=null){
-            //TODO fazer ciclo e verificar a posição dos novos camiões, se for igual à anterior, nao faz update à imagem
-            //TODO senão apaga a imagem na posiçao anterior e coloca o camião na sua nova posicao
+            for(int i = 0; i < truckLoc.length; i++){
+                if(trucksLoc_aux[i].equals(truckLoc[i])){
+
+                }
+            }
         }
 
         //TODO desenhar na cidade os depósitos (depositLoc) nas respectivas posições
@@ -94,6 +124,11 @@ public class InterfaceAgent{
 
         truckLoc = new Position[trucksLoc_aux.length];
         System.arraycopy(trucksLoc_aux,0,truckLoc,0,truckLoc.length);
+    }
+
+    @AgentKilled
+    public void killed(){
+        System.out.println("Killed agent" + agent.getAgentName());
     }
 
 }

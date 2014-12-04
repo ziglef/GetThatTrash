@@ -2,14 +2,16 @@ package main;
 
 import agents.InterfaceAgent;
 import agents.TruckAgent;
+
 import gui.Interface;
-//import agents.TruckAgent;
 import jadex.bridge.IExternalAccess;
 import jadex.bridge.service.types.cms.CreationInfo;
 import jadex.bridge.service.types.cms.IComponentManagementService;
 import jadex.commons.future.ThreadSuspendable;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+
 
 /**
  * Created by Tiago on 30/11/2014.
@@ -22,7 +24,7 @@ public class GarbageCollector {
         Declarations
     *-----------------------------*/
     private Interface graphicInt;
-    private ArrayList<TruckAgent> truckAgents;
+    private static ArrayList<TruckAgent> truckAgents;
     private ThreadSuspendable t;
     private IExternalAccess ia;
     private IComponentManagementService icms;
@@ -40,7 +42,7 @@ public class GarbageCollector {
     /*------------------------------
         Declarations
     *-----------------------------*/
-    public void launchAgent(String path, CreationInfo info){
+    public void launchAgent(String path, CreationInfo info) throws FileNotFoundException {
         InterfaceAgent.intAgent.deployAgent(path, info);
     }
 
@@ -55,25 +57,20 @@ public class GarbageCollector {
     public Position[] getTrucksLoc(){
         Position[] aux = new Position[truckAgents.size()];
         int i = 0;
-        //for(TruckAgent truck : truckAgents)
-          //  aux[++i]=truck.getLocation();
+        for(TruckAgent truck : truckAgents)
+            aux[++i]=truck.getLocation();
 
         return aux;
     }
 
     public TruckAgent getTruckByLoc(Position pos){
         for(TruckAgent truck : truckAgents){
-            //if(truck.getPosition().equals(pos))
+            if(truck.getLocation().equals(pos))
                 return truck;
         }
         return null;
     }
 
-    public boolean isRoad(Position pos){
-        //TODO  veriricar se uma posição é estrada! - graphicInt.getSpaceByPos(pos);
-
-        return true;
-    }
 
     public void setInterface(Interface graphicInt){
         if(this.graphicInt == null)
@@ -84,7 +81,7 @@ public class GarbageCollector {
         return this.graphicInt;
     }
 
-    //TODO check if we need to do agentTrip for something
+    //TODO steps (List) of truckTrip
 
     public void togglePause(){
       //  for(TruckAgent truck : truckAgents)
@@ -106,4 +103,10 @@ public class GarbageCollector {
     public void addTruckAgent(TruckAgent truckAgent) {
         truckAgents.add(truckAgent);
     }
+
+    public ArrayList<TruckAgent> getTruckAgents() {
+        return truckAgents;
+    }
+
+
 }

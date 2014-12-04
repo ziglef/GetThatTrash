@@ -78,7 +78,7 @@ public class Interface extends JFrame implements ActionListener{
             }
         }*/
 
-        city = new GridCity("resources/graphs/City2");
+        city = new GridCity("resources/graphs/City4");
         contentPane.add(city, BorderLayout.CENTER);
 
         //contentPane.add(buttonPanel, BorderLayout.CENTER);
@@ -158,12 +158,7 @@ public class Interface extends JFrame implements ActionListener{
 
     public boolean getPause(){
 
-        //TODO Criar um botao para cada um das opções
-        /*if (pauseBTN != null) {
-            return this.cb_pause.isSelected();
-        }
-        return false;*/
-        return true;
+       return false;
     }
 
 
@@ -190,13 +185,9 @@ public class Interface extends JFrame implements ActionListener{
         if(clicked == newBTN){
             ChooseCityGUI dialog = new ChooseCityGUI();
             dialog.setVisible(true);
-
-            city.changeGraph("resources/graphs/"+dialog.getCity());
-
-
+           //city.changeGraph("resources/graphs/"+dialog.getCity());
         }else if(clicked == exitBTN){
             int option = JOptionPane.showConfirmDialog(null, "Are you sure?", "Exit application", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-
             if(option == JOptionPane.YES_OPTION)
                 System.exit(0);
         }
