@@ -2,7 +2,7 @@ package gui;
 
 import javax.swing.*;
 
-import agents.TruckAgent;
+import agents.TruckAgentBDI;
 import jadex.bridge.service.types.cms.CreationInfo;
 import main.GarbageCollector;
 import main.Position;
@@ -13,11 +13,8 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,7 +51,7 @@ public class GridCity extends JPanel {
 
                     String name = new String("Truck");
                     Position pos = new Position(v.getX(), v.getY());
-                    TruckAgent.typeOfWaste type =  TruckAgent.typeOfWaste.UNDIFFERENTIATED;
+                    TruckAgentBDI.typeOfWaste type =  TruckAgentBDI.typeOfWaste.UNDIFFERENTIATED;
                     Map<String, Object> agentArguments = new HashMap<String, Object>();
                     agentArguments.put("Position", pos);
                     agentArguments.put("Capacity", 100);
@@ -72,7 +69,7 @@ public class GridCity extends JPanel {
 
 
                     if(GarbageCollector.getInstance() != null &&
-                           TruckAgent.AGENT_PATH != null &&
+                            TruckAgentBDI.AGENT_PATH != null &&
                            info != null)
                         try {
                             GarbageCollector.getInstance().launchAgent("src/agents/TruckAgent.java",info);

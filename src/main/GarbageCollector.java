@@ -1,8 +1,7 @@
 package main;
 
-import agents.InterfaceAgent;
-import agents.TruckAgent;
-
+import agents.InterfaceAgentBDI;
+import agents.TruckAgentBDI;
 import gui.Interface;
 import jadex.bridge.IExternalAccess;
 import jadex.bridge.service.types.cms.CreationInfo;
@@ -24,7 +23,7 @@ public class GarbageCollector {
         Declarations
     *-----------------------------*/
     private Interface graphicInt;
-    private static ArrayList<TruckAgent> truckAgents;
+    private static ArrayList<TruckAgentBDI> truckAgents;
     private ThreadSuspendable t;
     private IExternalAccess ia;
     private IComponentManagementService icms;
@@ -43,28 +42,28 @@ public class GarbageCollector {
         Declarations
     *-----------------------------*/
     public void launchAgent(String path, CreationInfo info) throws FileNotFoundException {
-        InterfaceAgent.intAgent.deployAgent(path, info);
+        InterfaceAgentBDI.intAgent.deployAgent(path, info);
     }
 
     public static GarbageCollector getInstance(){
         return instance == null? instance = new GarbageCollector() : instance;
     }
 
-    public void addTruck(TruckAgent truck){
+    public void addTruck(TruckAgentBDI truck){
         truckAgents.add(truck);
     }
 
     public Position[] getTrucksLoc(){
         Position[] aux = new Position[truckAgents.size()];
         int i = 0;
-        for(TruckAgent truck : truckAgents)
+        for(TruckAgentBDI truck : truckAgents)
             aux[++i]=truck.getLocation();
 
         return aux;
     }
 
-    public TruckAgent getTruckByLoc(Position pos){
-        for(TruckAgent truck : truckAgents){
+    public TruckAgentBDI getTruckByLoc(Position pos){
+        for(TruckAgentBDI truck : truckAgents){
             if(truck.getLocation().equals(pos))
                 return truck;
         }
@@ -100,11 +99,11 @@ public class GarbageCollector {
         this.memory = memory;
     }
 
-    public void addTruckAgent(TruckAgent truckAgent) {
+    public void addTruckAgent(TruckAgentBDI truckAgent) {
         truckAgents.add(truckAgent);
     }
 
-    public ArrayList<TruckAgent> getTruckAgents() {
+    public ArrayList<TruckAgentBDI> getTruckAgents() {
         return truckAgents;
     }
 
