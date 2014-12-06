@@ -20,16 +20,9 @@ import java.util.Random;
 @Arguments({
         @Argument(name = "Name", clazz = String.class, defaultvalue = "AnonymousTruck"),
         @Argument(name = "Capacity", clazz = Integer.class, defaultvalue = "500"),
-        @Argument(name = "Type", clazz = TruckAgentBDI.typeOfWaste.class),
-        @Argument(name = "Position", clazz = Position.class)
+        @Argument(name = "Type", clazz = TruckAgentBDI.typeOfWaste.class, defaultvalue = ""),
+        @Argument(name = "Position", clazz = Position.class, defaultvalue = "")
 })
-@Plans({
-        @Plan(trigger = @Trigger(goals = TruckAgentBDI.WanderAroundCity.class), body = @Body(WanderPlan.class)),
-        // @Plan(trigger = @Trigger(goals = TruckAgent.CheckContainer.class), body = @Body(PickWasteFromContainerPlan.class)),
-        // @Plan(trigger = @Trigger(goals = TruckAgent.GoToDeposit.class), body = @Body(GoToDepositPlan.class)),
-        // @Plan(trigger = @Trigger(goals = TruckAgent.DumpWaste.class), body = @Body(DumpWastePlan.class))
-})
-
 public class TruckAgentBDI {
 
     /*------------------------------
@@ -54,13 +47,25 @@ public class TruckAgentBDI {
     int occupiedCapacity;
 
     @Belief
-    boolean pause = false, memory = false, full = false, mission = false, communication = false;
+    boolean pause = false;
+
+    @Belief
+    boolean memory = false;
+
+    @Belief
+    boolean full = false;
+
+    @Belief
+    boolean mission = false;
+
+    @Belief
+    boolean communication = false;
 
     @Belief
     public static final long SLEEP = 500;
 
     private List<Position> steps;
-    public static final String AGENT_PATH = "src/agents/TruckAgent.class";
+    public static final String AGENT_PATH = "src/agents/TruckAgentBDI.java";
     private GridCity gc;
 
 
@@ -73,11 +78,10 @@ public class TruckAgentBDI {
     *-----------------------------*/
     @AgentCreated
     public void init() {
-        name = (String) agent.getArgument("Name");
-        type = (typeOfWaste) agent.getArgument("Type");
-        if (type == null) type = typeOfWaste.UNDIFFERENTIATED;
-        pos = (Position) agent.getArgument("Position");
-        capacity = (Integer) agent.getArgument("Capacity");
+        name = "Name";
+        type = typeOfWaste.UNDIFFERENTIATED;
+        pos = new Position(0,0);
+        capacity = 100;
         steps = new ArrayList<>();
         occupiedCapacity = 0;
         pause = GarbageCollector.getInstance().getPause();
@@ -96,7 +100,7 @@ public class TruckAgentBDI {
         System.out.println("------------------------");
         System.out.println("| >>> BODY OF A TRUCK!  |");
         System.out.println("------------------------");
-        agent.dispatchTopLevelGoal(new WanderAroundCity());
+        agent.dispatchTopLevelGoal(new WanderAroundCity("Olá"));
         // agent.dispatchTopLevelGoal(new DumpWaste());
     }
 
@@ -106,14 +110,48 @@ public class TruckAgentBDI {
     }
 
     /*-----------------------------
-        Goals
-    *---------------------------*/
-    @Goal(excludemode = Goal.ExcludeMode.Never, retry = true, succeedonpassed = false)
+       Goals
+     *---------------------------*/
+    @Goal(excludemode = Goal.ExcludeMode.Never, retry = true, orsuccess = false)
     public class WanderAroundCity {
 
-        @GoalContextCondition(rawevents = @jadex.bdiv3.annotation.RawEvent(value = "full"))
+        @GoalParameter
+        protected String p;
+
+        @GoalResult
+        protected int r;
+
+        @GoalContextCondition(rawevents = @jadex.bdiv3.annotation.RawEvent(value = "pause"))
         public boolean checkContext() {
-            return (!full && !pause);
+            return !pause;
+        }
+
+        public WanderAroundCity(String p) {
+            this.p = p;
+        }
+    }
+
+    /*-----------------------------
+     Plans
+    *---------------------------*/
+    @Plan(trigger=@Trigger(goals=WanderAroundCity.class))
+    protected void truckPlan() {
+        System.out.println("BODY DO PLANO DO CAMIAO");
+
+        do{
+            try {
+                Thread.sleep(SLEEP);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }while(isPause());
+
+        this.updatePos();
+
+        try {
+            Thread.sleep(SLEEP);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
@@ -182,7 +220,6 @@ public class TruckAgentBDI {
                     break;
             }
         }
-
         return null;
     }
 

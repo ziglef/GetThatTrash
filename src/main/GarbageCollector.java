@@ -1,7 +1,7 @@
 package main;
 
-import agents.InterfaceAgent;
-import agents.TruckAgent;
+import agents.InterfaceAgentBDI;
+import agents.TruckAgentBDI;
 
 import gui.Interface;
 import jadex.bridge.IExternalAccess;
@@ -9,7 +9,9 @@ import jadex.bridge.service.types.cms.CreationInfo;
 import jadex.bridge.service.types.cms.IComponentManagementService;
 import jadex.commons.future.ThreadSuspendable;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.ArrayList;
 
 
@@ -24,12 +26,13 @@ public class GarbageCollector {
         Declarations
     *-----------------------------*/
     private Interface graphicInt;
-    private static ArrayList<TruckAgent> truckAgents;
+    private static ArrayList<TruckAgentBDI> truckAgents;
     private ThreadSuspendable t;
     private IExternalAccess ia;
     private IComponentManagementService icms;
     private static GarbageCollector instance;
     public boolean memory = true, communication = true;
+    private InterfaceAgentBDI intBDI;
 
     /*------------------------------
         Constructors
@@ -43,28 +46,42 @@ public class GarbageCollector {
         Declarations
     *-----------------------------*/
     public void launchAgent(String path, CreationInfo info) throws FileNotFoundException {
-        InterfaceAgent.intAgent.deployAgent(path, info);
+
+        BufferedReader fis = new BufferedReader(new FileReader(path));
+
+        if(fis == null){
+            System.out.println("nao consigo ler o ficheiro");
+        }
+
+
+        if(InterfaceAgentBDI.intAgent == null){
+            System.out.println("Interface is NULL");
+        }
+
+        InterfaceAgentBDI.intAgent.deployAgent(path, info);
     }
 
     public static GarbageCollector getInstance(){
-        return instance == null? instance = new GarbageCollector() : instance;
+        if(instance == null)
+            instance = new GarbageCollector();
+        return instance;
     }
 
-    public void addTruck(TruckAgent truck){
+    public void addTruck(TruckAgentBDI truck){
         truckAgents.add(truck);
     }
 
     public Position[] getTrucksLoc(){
         Position[] aux = new Position[truckAgents.size()];
         int i = 0;
-        for(TruckAgent truck : truckAgents)
+        for(TruckAgentBDI truck : truckAgents)
             aux[++i]=truck.getLocation();
 
         return aux;
     }
 
-    public TruckAgent getTruckByLoc(Position pos){
-        for(TruckAgent truck : truckAgents){
+    public TruckAgentBDI getTruckByLoc(Position pos){
+        for(TruckAgentBDI truck : truckAgents){
             if(truck.getLocation().equals(pos))
                 return truck;
         }
@@ -100,11 +117,11 @@ public class GarbageCollector {
         this.memory = memory;
     }
 
-    public void addTruckAgent(TruckAgent truckAgent) {
+    public void addTruckAgent(TruckAgentBDI truckAgent) {
         truckAgents.add(truckAgent);
     }
 
-    public ArrayList<TruckAgent> getTruckAgents() {
+    public ArrayList<TruckAgentBDI> getTruckAgents() {
         return truckAgents;
     }
 

@@ -1,9 +1,8 @@
+package  tutoriais;
+
 import jadex.bdiv3.BDIAgent;
-import jadex.bdiv3.annotation.Plan;
-import jadex.bdiv3.annotation.Trigger;
-import jadex.micro.annotation.Agent;
-import jadex.micro.annotation.AgentBody;
-import jadex.micro.annotation.Description;
+import jadex.bdiv3.annotation.*;
+import jadex.micro.annotation.*;
 
 @Agent
 @Description("An agent with a goal.")
@@ -11,6 +10,9 @@ public class GoalAgentBDI {
 
     @Agent
     protected BDIAgent agent;
+
+    @Belief
+    boolean pause = false;
 
     @AgentBody
     public void body() {
@@ -21,6 +23,32 @@ public class GoalAgentBDI {
     @Plan(trigger=@Trigger(goals=AGoal.class))
     protected void basicPlan() {
         System.out.println("Executing basic plan.");
+        if(pause)
+            pause = false;
+        else
+            pause = true;
+        System.out.println("Pause is set to : " + pause);
     }
 
+    @Goal(excludemode = Goal.ExcludeMode.Never, retry = true, orsuccess = false)
+    public class AGoal {
+
+        @GoalParameter
+        protected String p;
+
+        @GoalResult
+        protected int r;
+
+        protected boolean pause = true;
+
+        @GoalContextCondition(rawevents = @jadex.bdiv3.annotation.RawEvent(value = "pause"))
+        public boolean checkContext() {
+            return pause;
+        }
+
+        public AGoal(String p) {
+            this.p = p;
+        }
+    }
 }
+

@@ -25,6 +25,8 @@ public class Interface extends JFrame implements ActionListener{
     private JPanel optPane2;
     private GridCity city;
     private Interface graphInt;
+    private JTextField agentName, agentCapacity;
+    private JLabel agentNameLabel, agentCapacityLabel;
 
     public Interface() throws FileNotFoundException{
         //super("Garbage Collection");
@@ -91,6 +93,10 @@ public class Interface extends JFrame implements ActionListener{
         pauseBTN = new JButton("Pause");
         helpBTN = new JButton("Help");
         exitBTN = new JButton("Exit");
+        agentName = new JTextField("");
+        agentCapacity = new JTextField("");
+        agentNameLabel = new JLabel("Agent name: ");
+        agentCapacityLabel = new JLabel("Agent capacity: ");
 
         optPane2.add(newBTN);
         newBTN.addActionListener(this);
@@ -131,6 +137,10 @@ public class Interface extends JFrame implements ActionListener{
             radioComponentTypeGroup.add(radioComponentType[i]);
             optPane2.add(radioComponentType[i]);
         }
+        optPane2.add(agentNameLabel);
+        optPane2.add(agentName);
+        optPane2.add(agentCapacityLabel);
+        optPane2.add(agentCapacity);
         label= new JLabel("_________________");
         optPane2.add(label);
         label= new JLabel("Advanced options:");

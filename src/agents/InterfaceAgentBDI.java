@@ -25,7 +25,7 @@ public class InterfaceAgentBDI {
         Declarations
     *-----------------------------*/
     @Agent
-    protected BDIAgent agent;
+    public static BDIAgent agent;
 
     protected Position[] truckLoc;
 
@@ -34,9 +34,12 @@ public class InterfaceAgentBDI {
     @Belief
     boolean pause = false;
 
-    public static final long SLEEP = 50;
+    public final long SLEEP = 50;
 
+    @Agent
     public static InterfaceAgentBDI intAgent;
+
+    public static IServiceProvider isp;
 
     /*------------------------------
         Agent Body
@@ -45,8 +48,12 @@ public class InterfaceAgentBDI {
     public void body(){
         try {
             graphicInt = new Interface();
-            System.out.println("Estou a correr a interface pelo body do agente!");
-            intAgent = this;
+           // System.out.println("Estou a correr a interface pelo body do agente!");
+            intAgent = new InterfaceAgentBDI();
+
+            isp = agent.getServiceProvider();
+            if(isp == null)
+                System.out.println("ISP IS NULL");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -59,21 +66,19 @@ public class InterfaceAgentBDI {
      *---------------------------*/
     @Plan(trigger=@Trigger(goals=AGoal.class))
     protected void basicPlan() {
-        System.out.println("Executing basic plan.");
-        System.out.println("At play body");
-        //intAgent.updateCity();
+        intAgent.updateCity();
+
         try {
             Thread.sleep(SLEEP);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        System.out.println("Pause is set to : " + pause);
     }
 
     /*-----------------------------
        Goals
      *---------------------------*/
-    @Goal(excludemode = Goal.ExcludeMode.Never, retry = true, succeedonpassed = false)
+    @Goal(excludemode = Goal.ExcludeMode.Never, retry = true, orsuccess = false)
     public class AGoal {
 
         @GoalParameter
@@ -84,7 +89,7 @@ public class InterfaceAgentBDI {
 
         @GoalContextCondition(rawevents = @jadex.bdiv3.annotation.RawEvent(value = "pause"))
         public boolean checkContext() {
-            return pause;
+            return !pause;
         }
 
         public AGoal(String p) {
@@ -98,20 +103,8 @@ public class InterfaceAgentBDI {
     public void deployAgent(String path, jadex.bridge.service.types.cms.CreationInfo info){
 
         ThreadSuspendable sus = new ThreadSuspendable();
-
-        /**
-         * General interface for components that the container can execute.
-         */
-
-        if(agent == null){
-            System.out.println("AGENT NULL");
-        }
-
         IServiceProvider sp = agent.getServiceProvider();
 
-        if(sp == null){
-            System.out.println("SP IS NULL");
-        }
         IComponentManagementService cms = null;
         try{
             cms = SServiceProvider.getService(sp, IComponentManagementService.class,
@@ -120,18 +113,7 @@ public class InterfaceAgentBDI {
             e.printStackTrace();
         }
 
-
-        System.out.println("I'm HERE!");
-
-        try {
-            BufferedReader fis = new BufferedReader(new FileReader("../../out/production/AIAD/agents/TruckAgent.class"));
-        } catch (FileNotFoundException e1) {
-            System.out.println("NAO ENCONTREI FILE!");
-            e1.printStackTrace();
-        }
-
-
-        IComponentIdentifier ici = cms.createComponent("../../out/production/AIAD/agents/TruckAgent.class", info).getFirstResult(sus);
+        IComponentIdentifier ici = cms.createComponent(path, info).getFirstResult(sus);
         System.out.println("started: " + ici);
     }
 
@@ -156,6 +138,14 @@ public class InterfaceAgentBDI {
 
         truckLoc = new Position[trucksLoc_aux.length];
         System.arraycopy(trucksLoc_aux,0,truckLoc,0,truckLoc.length);
+    }
+
+    public InterfaceAgentBDI getIntAgent() {
+        return intAgent;
+    }
+
+    public void setIntAgent(InterfaceAgentBDI intAgent) {
+        this.intAgent = intAgent;
     }
 
     @AgentKilled

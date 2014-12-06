@@ -1,7 +1,6 @@
 package plans;
 
-import agents.InterfaceAgent;
-import agents.TruckAgent;
+import agents.TruckAgentBDI;
 import jadex.bdi.runtime.IPlan;
 import jadex.bdiv3.annotation.Plan;
 import jadex.bdiv3.annotation.PlanAPI;
@@ -15,7 +14,7 @@ public class WanderPlan{
         Declarations
     *-----------------------------*/
     @PlanCapability
-    protected TruckAgent truck;
+    protected TruckAgentBDI truck;
     @PlanAPI
     protected IPlan plan;
 
@@ -30,11 +29,13 @@ public class WanderPlan{
     @PlanBody
     public void body() throws InterruptedException{
 
+        System.out.println("BODY DO PLANO DO CAMIAO");
+
         do{
-            Thread.sleep(TruckAgent.SLEEP);
+            Thread.sleep(TruckAgentBDI.SLEEP);
         }while(truck.isPause());
 
         truck.updatePos();
-        Thread.sleep(TruckAgent.SLEEP);
+        Thread.sleep(TruckAgentBDI.SLEEP);
     }
 }

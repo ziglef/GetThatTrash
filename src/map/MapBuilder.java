@@ -64,7 +64,7 @@ public class MapBuilder {
         // Initialize fields
         this();
 
-        System.out.println("Creating graph from file " + f.getName() + ".");
+      //  System.out.println("Creating graph from file " + f.getName() + ".");
 
         BufferedReader fis = null;
 
@@ -79,7 +79,7 @@ public class MapBuilder {
 
             for(String s: vertices.split(", ")){
                 if(!s.isEmpty()) {
-                    System.out.println("\tAdding vertex (" + s + ") to graph.");
+                   // System.out.println("\tAdding vertex (" + s + ") to graph.");
                     verticesRef.add(s);
                     // this.g.addVertex(s);
                 }
@@ -92,7 +92,7 @@ public class MapBuilder {
             for(String s: edges.split("\\),")){
                 if(!s.isEmpty()) {
                     s = s.replace("(", " ").replace(")", " ").trim();
-                    System.out.println("\tAdding edge (" + s.split(",")[0] + "->" + s.split(",")[1] + ") to graph.");
+                   // System.out.println("\tAdding edge (" + s.split(",")[0] + "->" + s.split(",")[1] + ") to graph.");
                     edgesRef.add(new Pair<>(s.split(",")[0], s.split(",")[1]));
                     // this.g.addEdge(s.split(",")[0], s.split(",")[1]);
                 }
