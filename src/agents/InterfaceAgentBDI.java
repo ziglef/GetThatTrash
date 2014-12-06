@@ -11,27 +11,32 @@ import jadex.commons.future.ThreadSuspendable;
 import jadex.micro.annotation.*;
 import main.GarbageCollector;
 import main.Position;
-import plans.UpdateMap;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 
 @Agent
-@Plans({ @Plan(trigger = @Trigger(goals = InterfaceAgent.GoalUpdateCity.class), body = @Body(UpdateMap.class)) })
 @Description("Agent that starts an interface and update the elements on the map.")
 
-public class InterfaceAgent{
+public class InterfaceAgentBDI {
 
     /*------------------------------
         Declarations
     *-----------------------------*/
-    @Agent protected BDIAgent agent;
-    @Belief protected Position[] truckLoc, containerLoc, depositLoc;
-    @Belief Interface graphicInt;
-    @Belief boolean pause = false;
-    @Belief public static final long SLEEP = 50;
-    public static InterfaceAgent intAgent;
+    @Agent
+    protected BDIAgent agent;
+
+    protected Position[] truckLoc;
+
+    Interface graphicInt;
+
+    @Belief
+    boolean pause = false;
+
+    public static final long SLEEP = 50;
+
+    public static InterfaceAgentBDI intAgent;
 
     /*------------------------------
         Agent Body
@@ -46,17 +51,44 @@ public class InterfaceAgent{
             e.printStackTrace();
         }
         GarbageCollector.getInstance().setInterface(graphicInt);
-        agent.dispatchTopLevelGoal(new GoalUpdateCity()).get();
+        int result = (int) agent.dispatchTopLevelGoal(new AGoal("important goal")).get();
+    }
+
+    /*-----------------------------
+       Plans
+     *---------------------------*/
+    @Plan(trigger=@Trigger(goals=AGoal.class))
+    protected void basicPlan() {
+        System.out.println("Executing basic plan.");
+        System.out.println("At play body");
+        //intAgent.updateCity();
+        try {
+            Thread.sleep(SLEEP);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Pause is set to : " + pause);
     }
 
     /*-----------------------------
        Goals
      *---------------------------*/
     @Goal(excludemode = Goal.ExcludeMode.Never, retry = true, succeedonpassed = false)
-    public class GoalUpdateCity{
+    public class AGoal {
+
+        @GoalParameter
+        protected String p;
+
+        @GoalResult
+        protected int r;
+
         @GoalContextCondition(rawevents = @jadex.bdiv3.annotation.RawEvent(value = "pause"))
         public boolean checkContext() {
-            return !pause;
+            return pause;
+        }
+
+        public AGoal(String p) {
+            this.p = p;
         }
     }
 

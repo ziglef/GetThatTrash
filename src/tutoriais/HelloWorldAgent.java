@@ -1,12 +1,14 @@
+package tutoriais;
+
 import jadex.micro.annotation.Agent;
 import jadex.micro.annotation.AgentBody;
 import jadex.micro.annotation.Description;
  
 @Agent //Identifica a classe como sendo um agente
-@Description("An agent that says hello to the world.") //Fornece descrição do agente que surge no JCC
+@Description("An agent that says hello to the world.") //Fornece descriï¿½ï¿½o do agente que surge no JCC
 public class HelloWorldAgent {
  
-	@AgentBody //especifica qual é o método a ser invocado lgoo após a criação do agente
+	@AgentBody //especifica qual ï¿½ o mï¿½todo a ser invocado lgoo apï¿½s a criaï¿½ï¿½o do agente
 	public void sayHello(){
 		System.out.println("Hello word!");
 	}
