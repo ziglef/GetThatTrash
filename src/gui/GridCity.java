@@ -47,7 +47,6 @@ public class GridCity extends JPanel {
                 v1.addProperty("type", "plastic");
                 ctB.getGraph().addVertex(v1);
             */
-
             Vertex v = ctB.getVertexByCoords(row, column);
             if (v != null) { // se houver vertice
                 // se for 'v' ou seja estrada
@@ -74,26 +73,19 @@ public class GridCity extends JPanel {
                     System.out.println("Working Directory = " +
                             System.getProperty("user.dir"));
 
-
-                    ThreadSuspendable sus = new ThreadSuspendable();
-                    IComponentManagementService cms = SServiceProvider.getService(InterfaceAgentBDI.isp, IComponentManagementService.class, RequiredServiceInfo.SCOPE_PLATFORM).get(sus);
-
-                    IComponentIdentifier ici = cms.createComponent(TruckAgentBDI.AGENT_PATH, info).getFirstResult(sus);
-                    System.out.println("started: " + ici);
-
-                } else {
-
                     if(GarbageCollector.getInstance() != null &&
                             TruckAgentBDI.AGENT_PATH != null &&
-                           info != null)
+                            info != null){
                         try {
-                            GarbageCollector.getInstance().launchAgent("src/agents/TruckAgent.java",info);
+                            GarbageCollector.getInstance().launchAgent("src/agents/TruckAgentBDI.java",info);
                         }catch (FileNotFoundException e1) {
                             System.out.println("NAO ENCONTREI FILE!");
                             e1.printStackTrace();
                         }
-                }else{
-                    System.out.println("Não é estrada");
+                    }
+
+                }else {
+                System.out.println("Não é estrada");
                 }
                 //System.out.println(v.toString());
             } else { // se nao houver

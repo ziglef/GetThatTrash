@@ -103,45 +103,45 @@
 			<p0:property __ID="22" type="argument"></p0:property>
 		</p0:properties>
 	</p0:properties>
-	<p0:properties __ID="23" type="library_service">
-		<p0:properties __ID="24" type="link">
-			<p0:properties __ID="25" type="a"></p0:properties>
-			<p0:properties __ID="26" type="b">
-				<p0:property __ID="27" type="lid_url">file:out</p0:property>
+	<p0:properties __ID="23" type="chat.system">
+		<p0:property __ID="24" type="nickname">user_c01</p0:property>
+	</p0:properties>
+	<p0:properties __ID="25" type="awa">
+		<p0:property __ID="26" type="fast">false</p0:property>
+		<p0:property __ID="27" type="autocreate">true</p0:property>
+		<p0:property __ID="28" type="autodelete">true</p0:property>
+	</p0:properties>
+	<p0:properties __ID="29" type="simulationservice">
+		<p0:property __ID="30" type="executing">true</p0:property>
+	</p0:properties>
+	<p0:properties __ID="31" type="securityservice">
+		<p0:property __ID="32" type="validityduration">327680</p0:property>
+		<p0:property __ID="33" type="usepass">true</p0:property>
+		<p0:property __ID="34" type="password">8f19f20b-47b</p0:property>
+		<p0:property __ID="35" type="selected_mechanism">0</p0:property>
+		<p0:property __ID="36" type="trustedlan">false</p0:property>
+		<p0:property __ID="37" type="storepath">./keystore</p0:property>
+		<p0:property __ID="38" type="storepass">keystore</p0:property>
+		<p0:property __ID="39" type="keypass">keystore</p0:property>
+		<p0:property __ID="40" type="selmech">0</p0:property>
+		<p0:properties __ID="41" type="DecentralizedAcquisitionMechanism">
+			<p0:property __ID="42" type="responses">1</p0:property>
+		</p0:properties>
+		<p0:properties __ID="43" type="TTPAcquisitionMechanism">
+			<p0:property __ID="44" type="verify">true</p0:property>
+		</p0:properties>
+	</p0:properties>
+	<p0:properties __ID="45" type="clockservice">
+		<p0:property __ID="46" type="type">system</p0:property>
+		<p0:property __ID="47" type="delta">100</p0:property>
+		<p0:property __ID="48" type="dilation">1.0</p0:property>
+	</p0:properties>
+	<p0:properties __ID="49" type="library_service">
+		<p0:properties __ID="50" type="link">
+			<p0:properties __ID="51" type="a"></p0:properties>
+			<p0:properties __ID="52" type="b">
+				<p0:property __ID="53" type="lid_url">file:out</p0:property>
 			</p0:properties>
 		</p0:properties>
-	</p0:properties>
-	<p0:properties __ID="28" type="clockservice">
-		<p0:property __ID="29" type="type">system</p0:property>
-		<p0:property __ID="30" type="delta">100</p0:property>
-		<p0:property __ID="31" type="dilation">1.0</p0:property>
-	</p0:properties>
-	<p0:properties __ID="32" type="simulationservice">
-		<p0:property __ID="33" type="executing">true</p0:property>
-	</p0:properties>
-	<p0:properties __ID="34" type="chat.system">
-		<p0:property __ID="35" type="nickname">user_fdf</p0:property>
-	</p0:properties>
-	<p0:properties __ID="36" type="securityservice">
-		<p0:property __ID="37" type="validityduration">327680</p0:property>
-		<p0:property __ID="38" type="usepass">true</p0:property>
-		<p0:property __ID="39" type="password">8f19f20b-47b</p0:property>
-		<p0:property __ID="40" type="selected_mechanism">0</p0:property>
-		<p0:property __ID="41" type="trustedlan">false</p0:property>
-		<p0:property __ID="42" type="storepath">./keystore</p0:property>
-		<p0:property __ID="43" type="storepass">keystore</p0:property>
-		<p0:property __ID="44" type="keypass">keystore</p0:property>
-		<p0:property __ID="45" type="selmech">0</p0:property>
-		<p0:properties __ID="46" type="DecentralizedAcquisitionMechanism">
-			<p0:property __ID="47" type="responses">1</p0:property>
-		</p0:properties>
-		<p0:properties __ID="48" type="TTPAcquisitionMechanism">
-			<p0:property __ID="49" type="verify">true</p0:property>
-		</p0:properties>
-	</p0:properties>
-	<p0:properties __ID="50" type="awa">
-		<p0:property __ID="51" type="fast">false</p0:property>
-		<p0:property __ID="52" type="autocreate">true</p0:property>
-		<p0:property __ID="53" type="autodelete">true</p0:property>
 	</p0:properties>
 </p0:properties>

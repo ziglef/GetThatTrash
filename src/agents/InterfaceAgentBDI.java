@@ -48,8 +48,8 @@ public class InterfaceAgentBDI {
     public void body(){
         try {
             graphicInt = new Interface();
-           // System.out.println("Estou a correr a interface pelo body do agente!");
-            intAgent = new InterfaceAgentBDI();
+            System.out.println("Estou a correr a interface pelo body do agente!");
+            //intAgent = this;
 
             isp = agent.getServiceProvider();
             if(isp == null)
@@ -58,7 +58,7 @@ public class InterfaceAgentBDI {
             e.printStackTrace();
         }
         GarbageCollector.getInstance().setInterface(graphicInt);
-        int result = (int) agent.dispatchTopLevelGoal(new AGoal("important goal")).get();
+        agent.dispatchTopLevelGoal(new AGoal("Important goal")).get();
     }
 
     /*-----------------------------
@@ -66,8 +66,9 @@ public class InterfaceAgentBDI {
      *---------------------------*/
     @Plan(trigger=@Trigger(goals=AGoal.class))
     protected void basicPlan() {
-        intAgent.updateCity();
+        //intAgent.updateCity();
 
+       // System.out.println("UpdateCity");
         try {
             Thread.sleep(SLEEP);
         } catch (InterruptedException e) {
@@ -101,6 +102,8 @@ public class InterfaceAgentBDI {
         Methods
      *---------------------------*/
     public void deployAgent(String path, jadex.bridge.service.types.cms.CreationInfo info){
+
+        System.out.println("Cheguei ao deployAgent");
 
         ThreadSuspendable sus = new ThreadSuspendable();
         IServiceProvider sp = agent.getServiceProvider();

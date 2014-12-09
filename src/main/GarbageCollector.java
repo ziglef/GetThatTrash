@@ -39,7 +39,6 @@ public class GarbageCollector {
     *-----------------------------*/
     protected GarbageCollector(){
         truckAgents = new ArrayList<>();
-        instance = null;
     }
 
     /*------------------------------
