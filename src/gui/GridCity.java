@@ -5,7 +5,6 @@ import javax.swing.*;
 import agents.InterfaceAgentBDI;
 import agents.TruckAgentBDI;
 import jadex.bridge.IComponentIdentifier;
-import jadex.bridge.service.IServiceProvider;
 import jadex.bridge.service.RequiredServiceInfo;
 import jadex.bridge.service.search.SServiceProvider;
 import jadex.bridge.service.types.cms.CreationInfo;
@@ -58,8 +57,10 @@ public class GridCity extends JPanel {
 
                     String name = new String("Truck");
                     Position pos = new Position(v.getX(), v.getY());
-                    TruckAgentBDI.typeOfWaste type = TruckAgentBDI.typeOfWaste.UNDIFFERENTIATED;
+
+                    TruckAgentBDI.typeOfWaste type =  TruckAgentBDI.typeOfWaste.UNDIFFERENTIATED;
                     Map<String, Object> agentArguments = new HashMap<>();
+
                     agentArguments.put("Position", pos);
                     agentArguments.put("Capacity", 100);
                     agentArguments.put("Name", name);
@@ -75,13 +76,23 @@ public class GridCity extends JPanel {
 
 
                     ThreadSuspendable sus = new ThreadSuspendable();
-
                     IComponentManagementService cms = SServiceProvider.getService(InterfaceAgentBDI.isp, IComponentManagementService.class, RequiredServiceInfo.SCOPE_PLATFORM).get(sus);
 
                     IComponentIdentifier ici = cms.createComponent(TruckAgentBDI.AGENT_PATH, info).getFirstResult(sus);
                     System.out.println("started: " + ici);
 
                 } else {
+
+                    if(GarbageCollector.getInstance() != null &&
+                            TruckAgentBDI.AGENT_PATH != null &&
+                           info != null)
+                        try {
+                            GarbageCollector.getInstance().launchAgent("src/agents/TruckAgent.java",info);
+                        }catch (FileNotFoundException e1) {
+                            System.out.println("NAO ENCONTREI FILE!");
+                            e1.printStackTrace();
+                        }
+                }else{
                     System.out.println("Não é estrada");
                 }
                 //System.out.println(v.toString());
