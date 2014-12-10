@@ -1,8 +1,5 @@
 package main;
 
-/**
- * Created by Tiago on 27/11/2014.
- */
 public class Position {
 
     public int x,y;
@@ -12,16 +9,15 @@ public class Position {
         this.y = y;
     }
 
-    public void autoMove() {
-
-        //TODO Movimento dos camiões
-
+    public boolean equals(Position pos){
+        return (pos.x == this.x && pos.y == this.y);
     }
 
-    //TODO Equals, toString
-    @Override
-    public Position clone() {
-        return new Position(this.x, this.y);
+    public String toString(){
+        String s = "";
+        s += "x" + ": " + this.x + "\n";
+        s += "y" + ": " + this.y + "\n";
+        return s;
     }
 
 }

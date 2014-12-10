@@ -1,5 +1,7 @@
 package map;
 
+import main.Position;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -53,6 +55,10 @@ public class Vertex {
 
     public int getY() {
         return this.y;
+    }
+
+    public Position getPosition() {
+        return new Position(this.x, this.y);
     }
 
     public void setY(int y) {

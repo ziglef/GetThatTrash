@@ -71,25 +71,23 @@ public class CityMapBuilder extends MapBuilder {
     public Collection<Vertex> getVertices() {
         return this.vertexMap.values();
     }
-    public boolean checkNeighborsFor(int x, int y){
+    public boolean checkNeighborsFor(int x, int y, char c){
         // left
         if( getVertexByCoords(x-1, y) != null )
-            return true;
+            return getVertexByCoords(x-1, y).getName().charAt(0) == c;
 
         // right
         if( getVertexByCoords(x+1, y) != null )
-            return true;
+            return getVertexByCoords(x-1, y).getName().charAt(0) == c;
 
         // top
         if( getVertexByCoords(x, y-1) != null )
-            return true;
+            return getVertexByCoords(x-1, y).getName().charAt(0) == c;
 
         // bottom
         if( getVertexByCoords(x, y+1) != null )
-            return true;
+            return getVertexByCoords(x-1, y).getName().charAt(0) == c;
 
         return false;
     }
-
-    //TODO ver se o vertice vizinho e estrada
 }
