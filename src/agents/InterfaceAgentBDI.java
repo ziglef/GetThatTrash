@@ -121,9 +121,6 @@ public class InterfaceAgentBDI {
             }
         }
 
-        //TODO desenhar na cidade os depósitos (depositLoc) nas respectivas posições
-        //TODO desenhar na cidade os contentores (containerLoc) nas respectivas posições
-
 
         truckLoc = new Position[trucksLoc_aux.length];
         System.arraycopy(trucksLoc_aux,0,truckLoc,0,truckLoc.length);

@@ -240,7 +240,7 @@ public class TruckAgentBDI {
         return randomNum;
     }
 
-    public Position getLocation() {
+    public Position getPosition() {
         return pos.clone();
     }
 }

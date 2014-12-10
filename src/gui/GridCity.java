@@ -34,7 +34,7 @@ public class GridCity extends JPanel {
     private int width, height;
     private final String defaultTerrain = "terrainTile3.png";
     private ImageIcon imgIcon;
-    private ImageIcon truckUndifferentiated = new ImageIcon("resources/assets/images/")
+    private ImageIcon truckUndifferentiated = new ImageIcon("resources/assets/images/truckundifferentiated.png");
     private CityMapBuilder ctB;
     private boolean wasInit;
     private InterfaceAgentBDI intAgent;
@@ -98,6 +98,10 @@ public class GridCity extends JPanel {
 
                     IComponentIdentifier ici = cms.createComponent(TruckAgentBDI.AGENT_PATH, info).getFirstResult(sus);
                     System.out.println("started: " + ici);
+
+
+                    validate();
+                    repaint();
 
                    /* if (info == null) System.out.println("INFO IS NULL");
 
@@ -201,11 +205,15 @@ public class GridCity extends JPanel {
             }
         }
 
+        //TODO draw camioes
         for (int i = 0; i < GarbageCollector.getInstance().getTruckAgents().size(); i++){
-            g.drawImage()
+            g.drawImage(truckUndifferentiated.getImage(),
+                        GarbageCollector.getInstance().getTrucksLoc()[i].y * width,
+                        GarbageCollector.getInstance().getTrucksLoc()[i].x * height,
+                        width,height,null);
         }
 
-        //TODO draw camioes
+
 
         //TODO draw contentores
         //TODO draw depositos

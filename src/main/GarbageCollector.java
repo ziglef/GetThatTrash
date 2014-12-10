@@ -66,15 +66,17 @@ public class GarbageCollector {
     public Position[] getTrucksLoc(){
         Position[] aux = new Position[truckAgents.size()];
         int i = 0;
-        for(TruckAgentBDI truck : truckAgents)
-            aux[++i]=truck.getLocation();
+        for(TruckAgentBDI truck : truckAgents) {
+            aux[i] = truck.getPosition();
+            i++;
+        }
 
         return aux;
     }
 
     public TruckAgentBDI getTruckByLoc(Position pos){
         for(TruckAgentBDI truck : truckAgents){
-            if(truck.getLocation().equals(pos))
+            if(truck.getPosition().equals(pos))
                 return truck;
         }
         return null;
