@@ -21,7 +21,7 @@
 				<p1:String xmlns:p1="typeinfo:java.lang" __ID="2">Starter.console.height</p1:String>
 			</key>
 			<value>
-				<p1:Double xmlns:p1="typeinfo:java.lang" __ID="3" content="0.9244663382594417"></p1:Double>
+				<p1:Double xmlns:p1="typeinfo:java.lang" __ID="3" content="0.9402730375426621"></p1:Double>
 			</value>
 		</entry>
 	</entries>
@@ -29,8 +29,8 @@
 ]]></p0:property>
 	</p0:properties>
 	<p0:properties __ID="14" type="Starter">
-		<p0:property __ID="15" type="leftsplit_location">0.28545454545454546</p0:property>
-		<p0:property __ID="16" type="mainsplit_location">0.6115627822944896</p0:property>
+		<p0:property __ID="15" type="leftsplit_location">0.2788104089219331</p0:property>
+		<p0:property __ID="16" type="mainsplit_location">0.500322788896062</p0:property>
 	</p0:properties>
 	<p0:properties __ID="17" type="Chat">
 		<p0:properties __ID="18" type="panelproperties">
@@ -39,10 +39,10 @@
 		</p0:properties>
 	</p0:properties>
 	<p0:properties __ID="21" type="window">
-		<p0:property __ID="22" type="width">1135</p0:property>
-		<p0:property __ID="23" type="height">735</p0:property>
-		<p0:property __ID="24" type="x">725</p0:property>
-		<p0:property __ID="25" type="y">129</p0:property>
+		<p0:property __ID="22" type="width">1577</p0:property>
+		<p0:property __ID="23" type="height">712</p0:property>
+		<p0:property __ID="24" type="x">113</p0:property>
+		<p0:property __ID="25" type="y">141</p0:property>
 		<p0:property __ID="26" type="extendedState">0</p0:property>
 		<p0:property __ID="27" type="jccexit">shutdown</p0:property>
 		<p0:property __ID="28" type="saveonexit">true</p0:property>

@@ -20,8 +20,9 @@ import java.util.Random;
 @Arguments({
         @Argument(name = "Name", clazz = String.class, defaultvalue = "AnonymousTruck"),
         @Argument(name = "Capacity", clazz = Integer.class, defaultvalue = "500"),
-        @Argument(name = "Type", clazz = TruckAgentBDI.typeOfWaste.class, defaultvalue = ""),
-        @Argument(name = "Position", clazz = Position.class, defaultvalue = "")
+        @Argument(name = "Type", clazz = TruckAgentBDI.typeOfWaste.class),
+        @Argument(name = "PositionX", clazz = Integer.class),
+        @Argument(name = "PositionY", clazz = Integer.class)
 })
 public class TruckAgentBDI {
 
@@ -65,7 +66,7 @@ public class TruckAgentBDI {
     public static final long SLEEP = 500;
 
     private List<Position> steps;
-    public static final String AGENT_PATH = "src/agents/TruckAgentBDI.java";
+    public static final String AGENT_PATH = "out\\production\\AIAD\\agents\\TruckAgentBDI.class";
     private GridCity gc;
 
 
@@ -78,10 +79,16 @@ public class TruckAgentBDI {
     *-----------------------------*/
     @AgentCreated
     public void init() {
-        name = "Name";
-        type = typeOfWaste.UNDIFFERENTIATED;
+        name = (String) agent.getArgument("Name");
+        type = (typeOfWaste) agent.getArgument("Type");
+        if(type==null)
+            type=typeOfWaste.UNDIFFERENTIATED;
         pos = new Position(0,0);
-        capacity = 100;
+        pos.x = (Integer) agent.getArgument("PositionX");
+        pos.y = (Integer) agent.getArgument("PositionY");
+        /*if(pos == null)
+            pos = uma posicao que seja estrada; mas nunca será null, só para caso haja algum erro*/
+        capacity = (Integer) agent.getArgument("Capacity");
         steps = new ArrayList<>();
         occupiedCapacity = 0;
         pause = GarbageCollector.getInstance().getPause();
@@ -92,6 +99,10 @@ public class TruckAgentBDI {
         System.out.println("------------------------");
         System.out.println("| >>> CREATE A TRUCK!  |");
         System.out.println("------------------------");
+        System.out.println("Name:" + name);
+        System.out.println("Capacity:" + capacity);
+        System.out.println("Position:" + pos.x +"-"+pos.y);
+        System.out.println("Type:" + type);
     }
 
     @AgentBody
@@ -100,7 +111,7 @@ public class TruckAgentBDI {
         System.out.println("------------------------");
         System.out.println("| >>> BODY OF A TRUCK!  |");
         System.out.println("------------------------");
-        agent.dispatchTopLevelGoal(new WanderAroundCity("Olá"));
+        agent.dispatchTopLevelGoal(new WanderAroundCity()).get();
         // agent.dispatchTopLevelGoal(new DumpWaste());
     }
 
@@ -115,20 +126,14 @@ public class TruckAgentBDI {
     @Goal(excludemode = Goal.ExcludeMode.Never, retry = true, orsuccess = false)
     public class WanderAroundCity {
 
-        @GoalParameter
-        protected String p;
-
         @GoalResult
         protected int r;
 
-        @GoalContextCondition(rawevents = @jadex.bdiv3.annotation.RawEvent(value = "pause"))
+        @GoalContextCondition(rawevents = @jadex.bdiv3.annotation.RawEvent(value="pause"))
         public boolean checkContext() {
             return !pause;
         }
 
-        public WanderAroundCity(String p) {
-            this.p = p;
-        }
     }
 
     /*-----------------------------
@@ -136,7 +141,6 @@ public class TruckAgentBDI {
     *---------------------------*/
     @Plan(trigger=@Trigger(goals=WanderAroundCity.class))
     protected void truckPlan() {
-        System.out.println("BODY DO PLANO DO CAMIAO");
 
         do{
             try {

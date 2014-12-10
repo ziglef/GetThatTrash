@@ -32,7 +32,6 @@ public class GarbageCollector {
     private IComponentManagementService icms;
     private static GarbageCollector instance;
     public boolean memory = true, communication = true;
-    private InterfaceAgentBDI intBDI;
 
     /*------------------------------
         Constructors
@@ -51,7 +50,6 @@ public class GarbageCollector {
         if(fis == null){
             System.out.println("nao consigo ler o ficheiro");
         }
-
 
         if(InterfaceAgentBDI.intAgent == null){
             System.out.println("Interface is NULL");
@@ -118,6 +116,8 @@ public class GarbageCollector {
 
     public void addTruckAgent(TruckAgentBDI truckAgent) {
         truckAgents.add(truckAgent);
+
+        System.out.println(truckAgents.size());
     }
 
     public ArrayList<TruckAgentBDI> getTruckAgents() {

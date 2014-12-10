@@ -1,5 +1,7 @@
 package gui;
 
+import agents.InterfaceAgentBDI;
+import jadex.bdiv3.BDIAgent;
 import jadex.bridge.IExternalAccess;
 
 import java.awt.*;
@@ -24,11 +26,12 @@ public class Interface extends JFrame implements ActionListener{
     private ButtonGroup radioComponentTypeGroup;
     private JPanel optPane2;
     private GridCity city;
-    private Interface graphInt;
+    public static Interface graphInt;
+
     private JTextField agentName, agentCapacity;
     private JLabel agentNameLabel, agentCapacityLabel;
 
-    public Interface() throws FileNotFoundException{
+    public Interface(final IExternalAccess agent) throws FileNotFoundException{
         //super("Garbage Collection");
 
         memoryCB = new JCheckBox();
@@ -38,10 +41,11 @@ public class Interface extends JFrame implements ActionListener{
         communicationCB = new JCheckBox();
         communicationCB.setSelected(true);
         communicationCB.setText("Communication");
-        createAndDisplayGUI();
+        createAndDisplayGUI(agent);
+        graphInt = this;
     }
 
-    private void createAndDisplayGUI(/*String cityFile*/){
+    private void createAndDisplayGUI(IExternalAccess agent){
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setPreferredSize(new Dimension(800, 600));
         setMinimumSize(new Dimension(800,600));
@@ -80,7 +84,7 @@ public class Interface extends JFrame implements ActionListener{
             }
         }*/
 
-        city = new GridCity("resources/graphs/City4");
+        city = new GridCity("resources/graphs/City4", agent);
         contentPane.add(city, BorderLayout.CENTER);
 
         //contentPane.add(buttonPanel, BorderLayout.CENTER);
@@ -172,20 +176,20 @@ public class Interface extends JFrame implements ActionListener{
     }
 
 
-    public static void main(String[] args){
+   /* public static void main(String[] args){
 
         SwingUtilities.invokeLater(new Runnable()
         {
             public void run()
             {
                 try {
-                    new Interface().createAndDisplayGUI(/* "resources/graphs/City3";*/);
+                    new Interface().createAndDisplayGUI(/* "resources/graphs/City3";);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
             }
         });
-    }
+    }*/
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -195,12 +199,19 @@ public class Interface extends JFrame implements ActionListener{
         if(clicked == newBTN){
             ChooseCityGUI dialog = new ChooseCityGUI();
             dialog.setVisible(true);
-           //city.changeGraph("resources/graphs/"+dialog.getCity());
         }else if(clicked == exitBTN){
             int option = JOptionPane.showConfirmDialog(null, "Are you sure?", "Exit application", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
             if(option == JOptionPane.YES_OPTION)
                 System.exit(0);
         }
+    }
+
+    public JTextField getAgentName() {
+        return agentName;
+    }
+
+    public JTextField getAgentCapacity() {
+        return agentCapacity;
     }
 
 }

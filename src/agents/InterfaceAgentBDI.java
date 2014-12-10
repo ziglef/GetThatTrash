@@ -11,10 +11,7 @@ import jadex.commons.future.ThreadSuspendable;
 import jadex.micro.annotation.*;
 import main.GarbageCollector;
 import main.Position;
-
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 
 @Agent
 @Description("Agent that starts an interface and update the elements on the map.")
@@ -24,22 +21,22 @@ public class InterfaceAgentBDI {
     /*------------------------------
         Declarations
     *-----------------------------*/
+    public static InterfaceAgentBDI intAgent;
+
     @Agent
-    public static BDIAgent agent;
+    protected BDIAgent agent;
 
     protected Position[] truckLoc;
 
-    Interface graphicInt;
+    @Belief
+    protected Interface graphicInt;
 
     @Belief
     boolean pause = false;
 
+    @Belief
     public final long SLEEP = 50;
 
-    @Agent
-    public static InterfaceAgentBDI intAgent;
-
-    public static IServiceProvider isp;
 
     /*------------------------------
         Agent Body
@@ -47,18 +44,13 @@ public class InterfaceAgentBDI {
     @AgentBody
     public void body(){
         try {
-            graphicInt = new Interface();
-            System.out.println("Estou a correr a interface pelo body do agente!");
-            //intAgent = this;
-
-            isp = agent.getServiceProvider();
-            if(isp == null)
-                System.out.println("ISP IS NULL");
+            graphicInt = new Interface(agent.getExternalAccess());
+            intAgent = this;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
         GarbageCollector.getInstance().setInterface(graphicInt);
-        agent.dispatchTopLevelGoal(new AGoal("Important goal")).get();
+        agent.dispatchTopLevelGoal(new AGoal()).get();
     }
 
     /*-----------------------------
@@ -82,9 +74,6 @@ public class InterfaceAgentBDI {
     @Goal(excludemode = Goal.ExcludeMode.Never, retry = true, orsuccess = false)
     public class AGoal {
 
-        @GoalParameter
-        protected String p;
-
         @GoalResult
         protected int r;
 
@@ -93,9 +82,6 @@ public class InterfaceAgentBDI {
             return !pause;
         }
 
-        public AGoal(String p) {
-            this.p = p;
-        }
     }
 
     /*-----------------------------
@@ -108,7 +94,7 @@ public class InterfaceAgentBDI {
         ThreadSuspendable sus = new ThreadSuspendable();
         IServiceProvider sp = agent.getServiceProvider();
 
-        IComponentManagementService cms = null;
+       IComponentManagementService cms = null;
         try{
             cms = SServiceProvider.getService(sp, IComponentManagementService.class,
                     RequiredServiceInfo.SCOPE_PLATFORM).get(sus);

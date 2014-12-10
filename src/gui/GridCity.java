@@ -4,12 +4,16 @@ import javax.swing.*;
 
 import agents.InterfaceAgentBDI;
 import agents.TruckAgentBDI;
+import jadex.bdiv3.BDIAgent;
 import jadex.bridge.IComponentIdentifier;
+import jadex.bridge.IExternalAccess;
+import jadex.bridge.service.IServiceProvider;
 import jadex.bridge.service.RequiredServiceInfo;
 import jadex.bridge.service.search.SServiceProvider;
 import jadex.bridge.service.types.cms.CreationInfo;
 import jadex.bridge.service.types.cms.IComponentManagementService;
 import jadex.commons.future.ThreadSuspendable;
+import jadex.micro.annotation.AgentArgument;
 import main.GarbageCollector;
 import main.Position;
 import map.CityMapBuilder;
@@ -30,8 +34,12 @@ public class GridCity extends JPanel {
     private int width, height;
     private final String defaultTerrain = "terrainTile3.png";
     private ImageIcon imgIcon;
+    private ImageIcon truckUndifferentiated = new ImageIcon("resources/assets/images/")
     private CityMapBuilder ctB;
     private boolean wasInit;
+    private InterfaceAgentBDI intAgent;
+
+    private IExternalAccess agent;
 
     // Mouse listener for the images //
     private MouseListener listener = new MouseAdapter() {
@@ -40,32 +48,58 @@ public class GridCity extends JPanel {
             int column = e.getX() / width;
             int row = e.getY() / height;
 
-            /*
-                Vertex v1 = new Vertex("esp1");
-                v1.addProperty("coords", "0,1");
-                v1.addProperty("img", "asda");
-                v1.addProperty("type", "plastic");
-                ctB.getGraph().addVertex(v1);
-            */
+
             Vertex v = ctB.getVertexByCoords(row, column);
             if (v != null) { // se houver vertice
                 // se for 'v' ou seja estrada
                 if (v.getName().charAt(0) == 'v') {
 
-                    System.out.println("Carreguei numa estrada");
+                    String name = Interface.graphInt.getAgentName().getText();
+                    if(name.length() == 0)
+                        name = "Anonymous";
 
-                    String name = new String("Truck");
+                    String capacityStr = Interface.graphInt.getAgentCapacity().getText();
+                    Integer capacity;
+                    if(capacityStr.length() == 0)
+                        capacity = 500;
+                    else
+                        capacity = Integer.parseInt(capacityStr);
+
                     Position pos = new Position(v.getX(), v.getY());
 
                     TruckAgentBDI.typeOfWaste type =  TruckAgentBDI.typeOfWaste.UNDIFFERENTIATED;
                     Map<String, Object> agentArguments = new HashMap<>();
 
-                    agentArguments.put("Position", pos);
-                    agentArguments.put("Capacity", 100);
+                    System.out.println("------------------------");
+                    System.out.println("| >>> CLICK TO TRUCK!  |");
+                    System.out.println("------------------------");
+                    System.out.println("Name:" + name);
+                    System.out.println("Capacity:" + capacity);
+                    System.out.println("Position:" + pos.x +"-"+pos.y);
+                    System.out.println("Type:" + type);
+
                     agentArguments.put("Name", name);
+                    agentArguments.put("PositionX", pos.x);
+                    agentArguments.put("PositionY", pos.y);
+                    agentArguments.put("Capacity", capacity);
                     agentArguments.put("Type", type);
                     CreationInfo info = new CreationInfo(agentArguments);
-                    if (info == null) System.out.println("INFO IS NULL");
+
+                    ThreadSuspendable sus = new ThreadSuspendable();
+                    IServiceProvider sp = agent.getServiceProvider();
+
+                    IComponentManagementService cms = null;
+                    try{
+                        cms = SServiceProvider.getService(sp, IComponentManagementService.class,
+                                RequiredServiceInfo.SCOPE_PLATFORM).get(sus);
+                    }catch (NullPointerException ee){
+                        ee.printStackTrace();
+                    }
+
+                    IComponentIdentifier ici = cms.createComponent(TruckAgentBDI.AGENT_PATH, info).getFirstResult(sus);
+                    System.out.println("started: " + ici);
+
+                   /* if (info == null) System.out.println("INFO IS NULL");
 
                     if (GarbageCollector.getInstance() == null)
                         System.out.println("INSTANCE IS NULL");
@@ -73,16 +107,12 @@ public class GridCity extends JPanel {
                     System.out.println("Working Directory = " +
                             System.getProperty("user.dir"));
 
-                    if(GarbageCollector.getInstance() != null &&
-                            TruckAgentBDI.AGENT_PATH != null &&
-                            info != null){
-                        try {
-                            GarbageCollector.getInstance().launchAgent("src/agents/TruckAgentBDI.java",info);
-                        }catch (FileNotFoundException e1) {
-                            System.out.println("NAO ENCONTREI FILE!");
-                            e1.printStackTrace();
-                        }
-                    }
+                    try {
+                        GarbageCollector.getInstance().launchAgent(TruckAgentBDI.AGENT_PATH,info);
+                    } catch (FileNotFoundException e1) {
+                        e1.printStackTrace();
+                    }*/
+
 
                 }else {
                 System.out.println("Não é estrada");
@@ -99,10 +129,10 @@ public class GridCity extends JPanel {
         return ctB;
     }
 
-    public GridCity(String filePath) {
+    public GridCity(String filePath, IExternalAccess agent) {
+        this.agent = agent;
         ctB = new CityMapBuilder(new File(filePath));
         addMouseListener(listener);
-
         setCursor (Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         this.wasInit = false;
     }
@@ -169,6 +199,10 @@ public class GridCity extends JPanel {
                 imgIcon = new ImageIcon("resources/assets/images/" + imgTerrain);
                 g.drawImage(imgIcon.getImage(), j * width, i * height, width, height, null);
             }
+        }
+
+        for (int i = 0; i < GarbageCollector.getInstance().getTruckAgents().size(); i++){
+            g.drawImage()
         }
 
         //TODO draw camioes
