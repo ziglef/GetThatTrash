@@ -14,11 +14,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 
-
-/**
- * Created by Tiago on 30/11/2014.
- */
-
 //TODO add things about deposits and collectors
 public class GarbageCollector {
 
@@ -105,7 +100,7 @@ public class GarbageCollector {
     }
 
     public boolean getPause(){
-        return graphicInt == null ? false : graphicInt.getPause();
+        return graphicInt != null && graphicInt.getPause();
     }
 
     private boolean getMemory(){
