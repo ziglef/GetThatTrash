@@ -10,9 +10,6 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
-/**
- * Created by Tiago on 02/12/2014.
- */
 public class ChooseCityGUI extends JDialog {
 
     private String city;
@@ -30,7 +27,7 @@ public class ChooseCityGUI extends JDialog {
             cities[i-1] = "City"+i;
         }
 
-        cb = new JComboBox<String>(cities);
+        cb = new JComboBox<>(cities);
         cb.setSelectedIndex(0);
         this.add(cb, BorderLayout.CENTER);
 

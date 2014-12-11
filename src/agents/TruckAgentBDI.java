@@ -95,6 +95,7 @@ public class TruckAgentBDI {
         GarbageCollector.getInstance().addTruckAgent(this);
         memory = GarbageCollector.getInstance().memory;
         mission = false;
+        gc = GarbageCollector.getInstance().getInterface().getCity();
 
         System.out.println("------------------------");
         System.out.println("| >>> CREATE A TRUCK!  |");
@@ -152,6 +153,7 @@ public class TruckAgentBDI {
         }while(isPause());
 
         updatePos();
+        gc.validate();
         gc.repaint();
 
         try {
@@ -191,60 +193,13 @@ public class TruckAgentBDI {
     }
 
     public Position autoMove() {
+        ArrayList<Position> neighbors = new ArrayList<>();
+        if( isConnected(pos, new Position(pos.x, pos.y - 1)) ) neighbors.add(new Position(pos.x, pos.y - 1));
+        if( isConnected(pos, new Position(pos.x + 1, pos.y)) ) neighbors.add(new Position(pos.x + 1, pos.y));
+        if( isConnected(pos, new Position(pos.x, pos.y + 1)) ) neighbors.add(new Position(pos.x, pos.y + 1));
+        if( isConnected(pos, new Position(pos.x - 1, pos.y)) ) neighbors.add(new Position(pos.x - 1, pos.y));
 
-        Position newPos;
-        boolean road = false;
-
-        while (!road) {
-            int random = randInt(0, 3);
-
-            System.out.println(random);
-            switch (random) {
-                case 0:
-                    newPos = new Position(pos.x, pos.y - 1);
-                    System.out.println(isRoad(newPos));
-                    if (isRoad(newPos)) {
-                       // if (isConnected(pos, newPos)) {
-                            road = true;
-                            return newPos;
-                        //}
-                    }
-                    break;
-                case 1:
-                    newPos = new Position(pos.x + 1, pos.y);
-                    System.out.println(isRoad(newPos));
-                    if (isRoad(newPos)) {
-                       // if (isConnected(pos, newPos)) {
-                            road = true;
-                            return newPos;
-                        //}
-                    }
-                    break;
-                case 2:
-                    newPos = new Position(pos.x, pos.y + 1);
-                    System.out.println(isRoad(newPos));
-                    if (isRoad(newPos)) {
-                        //if (isConnected(pos, newPos)) {
-                            road = true;
-                            return newPos;
-                        //}
-                    }
-                    break;
-                case 3:
-                    newPos = new Position(pos.x-1, pos.y);
-                    System.out.println(isRoad(newPos));
-                    if (isRoad(newPos)) {
-                       // if (isConnected(pos, newPos)) {
-                            road = true;
-                            return newPos;
-                        //}
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-        return null;
+        return neighbors.get(((int)(Math.random() * 1000) % neighbors.size()));
     }
 
     public boolean isRoad(Position pos) {
@@ -256,12 +211,6 @@ public class TruckAgentBDI {
         Vertex destination = gc.getCtB().getVertexByCoords(dest.x, dest.y);
 
        return gc.getCtB().getGraph().getEdge(origin, destination) != null;
-    }
-
-    public int randInt(int min, int max) {
-        Random rand = new Random();
-        int randomNum = rand.nextInt((max - min) + 1) + min;
-        return randomNum;
     }
 
     public Position getPosition() {

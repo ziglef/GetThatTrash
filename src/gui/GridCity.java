@@ -232,14 +232,22 @@ public class GridCity extends JPanel {
 
             TruckAgentBDI.typeOfWaste type = GarbageCollector.getInstance().getTruckAgents().get(i).getType();
 
-            if(type == TruckAgentBDI.typeOfWaste.GLASS)
+            if(type == TruckAgentBDI.typeOfWaste.GLASS) {
                 img = truckGlass.getImage();
-            else if(type == TruckAgentBDI.typeOfWaste.PAPER)
+                g.setColor(new Color(24,167,78));
+            }
+            else if(type == TruckAgentBDI.typeOfWaste.PAPER) {
                 img = truckPaper.getImage();
-            else if(type == TruckAgentBDI.typeOfWaste.PLASTIC)
+                g.setColor(Color.blue);
+            }
+            else if(type == TruckAgentBDI.typeOfWaste.PLASTIC) {
                 img = truckPlastic.getImage();
-            else
+                g.setColor(new Color(255,255,0));
+            }
+            else {
                 img = truckUndifferentiated.getImage();
+                g.setColor(Color.black);
+            }
 
             g.drawImage(img,
                         GarbageCollector.getInstance().getTrucksLoc()[i].y * width,
@@ -248,7 +256,7 @@ public class GridCity extends JPanel {
                         height,
                         null);
 
-            g.setColor(Color.red);
+           // g.setColor(Color.red);
 
             int fontSize = 11;
             if(width< 64 )

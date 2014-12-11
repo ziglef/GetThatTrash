@@ -1,7 +1,5 @@
 package gui;
 
-import agents.InterfaceAgentBDI;
-import jadex.bdiv3.BDIAgent;
 import jadex.bridge.IExternalAccess;
 
 import java.awt.*;
@@ -31,6 +29,7 @@ public class Interface extends JFrame implements ActionListener{
     private JLabel agentNameLabel;
     private JLabel agentCapacityLabel;
     private JLabel info;
+    private IExternalAccess agent;
 
     public Interface(final IExternalAccess agent) throws FileNotFoundException{
         //super("Garbage Collection");
@@ -49,6 +48,7 @@ public class Interface extends JFrame implements ActionListener{
 
 
     private void createAndDisplayGUI(IExternalAccess agent){
+        this.agent = agent;
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setPreferredSize(new Dimension(1024,768));
         setMinimumSize(new Dimension(800,600));
@@ -61,7 +61,7 @@ public class Interface extends JFrame implements ActionListener{
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(gridSize, gridSize, 0,0));
 
-        city = new GridCity("resources/graphs/City5", agent);
+        city = new GridCity("resources/graphs/City3", agent);
         contentPane.add(city, BorderLayout.CENTER);
 
         optPane2 = new JPanel();
@@ -172,6 +172,12 @@ public class Interface extends JFrame implements ActionListener{
         if(clicked == newBTN){
             ChooseCityGUI dialog = new ChooseCityGUI();
             dialog.setVisible(true);
+            Container panel = getContentPane();
+            panel.remove(city);
+            city = new GridCity("resources/graphs/"+dialog.getCity(), this.agent);
+            panel.add(city);
+            validate();
+            repaint();
         }else if(clicked == exitBTN){
             int option = JOptionPane.showConfirmDialog(null, "Are you sure?", "Exit application", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
             if(option == JOptionPane.YES_OPTION)
@@ -207,4 +213,7 @@ public class Interface extends JFrame implements ActionListener{
          infoPanel.setVisible(value);
     }
 
+    public GridCity getCity() {
+        return city;
+    }
 }
