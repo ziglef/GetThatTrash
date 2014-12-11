@@ -18,7 +18,7 @@ import java.util.Random;
 @Agent
 @Description("Agent that launch a new garbage truck of a specific type.")
 @Arguments({
-        @Argument(name = "Name", clazz = String.class, defaultvalue = "AnonymousTruck"),
+        @Argument(name = "Name", clazz = String.class, defaultvalue = "Anony"),
         @Argument(name = "Capacity", clazz = Integer.class, defaultvalue = "500"),
         @Argument(name = "Type", clazz = TruckAgentBDI.typeOfWaste.class),
         @Argument(name = "PositionX", clazz = Integer.class),
@@ -142,6 +142,7 @@ public class TruckAgentBDI {
     @Plan(trigger=@Trigger(goals=WanderAroundCity.class))
     protected void truckPlan() {
 
+
         do{
             try {
                 Thread.sleep(SLEEP);
@@ -150,7 +151,8 @@ public class TruckAgentBDI {
             }
         }while(isPause());
 
-        this.updatePos();
+        updatePos();
+        gc.repaint();
 
         try {
             Thread.sleep(SLEEP);
@@ -172,15 +174,19 @@ public class TruckAgentBDI {
 
     public void updatePos() {
 
+        pos = autoMove();
+
+        System.out.println(pos.x + "-" + pos.y);
         // have a trip to do
-        if (steps.size() > 0) {
-            //TODO get trip
+       /* if (steps.size() > 0) {
+            System.out.println("steps.size() > 0");
         } else if (steps != null) {
             //Set the current position to the last position on the list of steps
             pos = steps.remove(steps.size() - 1);
+            System.out.println("steps != null");
         } else {
             pos = autoMove();
-        }
+        }*/
 
     }
 
@@ -191,41 +197,47 @@ public class TruckAgentBDI {
 
         while (!road) {
             int random = randInt(0, 3);
+
+            System.out.println(random);
             switch (random) {
                 case 0:
                     newPos = new Position(pos.x, pos.y - 1);
+                    System.out.println(isRoad(newPos));
                     if (isRoad(newPos)) {
-                        if (isConnected(pos, newPos)) {
+                       // if (isConnected(pos, newPos)) {
                             road = true;
                             return newPos;
-                        }
+                        //}
                     }
                     break;
                 case 1:
                     newPos = new Position(pos.x + 1, pos.y);
+                    System.out.println(isRoad(newPos));
                     if (isRoad(newPos)) {
-                        if (isConnected(pos, newPos)) {
+                       // if (isConnected(pos, newPos)) {
                             road = true;
                             return newPos;
-                        }
+                        //}
                     }
                     break;
                 case 2:
                     newPos = new Position(pos.x, pos.y + 1);
+                    System.out.println(isRoad(newPos));
                     if (isRoad(newPos)) {
-                        if (isConnected(pos, newPos)) {
+                        //if (isConnected(pos, newPos)) {
                             road = true;
                             return newPos;
-                        }
+                        //}
                     }
                     break;
                 case 3:
                     newPos = new Position(pos.x-1, pos.y);
+                    System.out.println(isRoad(newPos));
                     if (isRoad(newPos)) {
-                        if (isConnected(pos, newPos)) {
+                       // if (isConnected(pos, newPos)) {
                             road = true;
                             return newPos;
-                        }
+                        //}
                     }
                     break;
                 default:
@@ -243,7 +255,7 @@ public class TruckAgentBDI {
         Vertex origin = gc.getCtB().getVertexByCoords(orig.x, orig.y);
         Vertex destination = gc.getCtB().getVertexByCoords(dest.x, dest.y);
 
-        return gc.getCtB().getGraph().getEdge(origin, destination) != null;
+       return gc.getCtB().getGraph().getEdge(origin, destination) != null;
     }
 
     public int randInt(int min, int max) {
@@ -256,10 +268,11 @@ public class TruckAgentBDI {
         return pos;
     }
 
-<<<<<<< HEAD
+
     public typeOfWaste getType() {
         return type;
-=======
+    }
+
     public ArrayList<Position> getShortestPath(Position dest){
         if( !isRoad(dest) ) return null;
 
@@ -271,7 +284,7 @@ public class TruckAgentBDI {
         }
 
         return path;
->>>>>>> ce3149a5f35f666f5360f35e62ce157782750d3c
+
     }
 }
 

@@ -10,6 +10,7 @@ import java.util.Map;
 
 public class MapBuilder {
 
+    //TODO fazer com que quando mudo de mapa na interface, altere o grafo para o mapa correspondente
     private ListenableDirectedGraph<Vertex, DefaultEdge> g;
     private ArrayList<String> verticesRef;
     private ArrayList<Pair<String, String>> edgesRef;

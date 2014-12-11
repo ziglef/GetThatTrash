@@ -24,13 +24,12 @@ public class Interface extends JFrame implements ActionListener{
     private ButtonGroup radioComponentGroup;
     private JRadioButton[] radioComponentType;
     private ButtonGroup radioComponentTypeGroup;
-    private JPanel optPane2, infoPanel;
+    private JPanel optPane2, infoPanel, elementsPane;
     private GridCity city;
     public static Interface graphInt;
     private JTextField agentName, agentCapacity;
     private JLabel agentNameLabel;
     private JLabel agentCapacityLabel;
-
     private JLabel info;
 
     public Interface(final IExternalAccess agent) throws FileNotFoundException{
@@ -62,7 +61,7 @@ public class Interface extends JFrame implements ActionListener{
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(gridSize, gridSize, 0,0));
 
-        city = new GridCity("resources/graphs/City4", agent);
+        city = new GridCity("resources/graphs/City5", agent);
         contentPane.add(city, BorderLayout.CENTER);
 
         optPane2 = new JPanel();
@@ -127,17 +126,17 @@ public class Interface extends JFrame implements ActionListener{
         optPane2.add(label);
         optPane2.add(memoryCB);
         optPane2.add(communicationCB);
+        contentPane.add(optPane2,BorderLayout.WEST);
 
-        contentPane.add(optPane2, BorderLayout.WEST);
+        elementsPane = new JPanel();
+        elementsPane.setLayout(new GridLayout(0, 1));
 
-        JList list_objects = new JList();
-        JScrollPane scrollPane = new JScrollPane(list_objects);
-        contentPane.add(scrollPane, BorderLayout.EAST);
 
         infoPanel = new JPanel();
         infoPanel.setLayout(new FlowLayout());
         infoPanel.setBorder(BorderFactory.createTitledBorder("Information"));
         infoPanel.setVisible(false);
+
         info  = new JLabel();
         info.setForeground(Color.red);
         info.setFont (info.getFont().deriveFont(16.0f));

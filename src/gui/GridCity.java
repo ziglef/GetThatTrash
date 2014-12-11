@@ -51,6 +51,8 @@ public class GridCity extends JPanel {
     private static final int PAPER = 1;
     private static final int PLASTIC = 2;
     private static final int UNDIFFERENTIATED = 3;
+    private int anonymousNr = 1;
+    public static GridCity city;
 
     // Mouse listener for the images //
     private MouseListener listener = new MouseAdapter() {
@@ -76,8 +78,10 @@ public class GridCity extends JPanel {
                     if (v.getName().charAt(0) == 'v' && object == TRUCK) {
 
                         String name = Interface.graphInt.getAgentName().getText();
-                        if (name.length() == 0)
-                            name = "Anonymous";
+                        if (name.length() == 0) {
+                            name = "Anony" + anonymousNr;
+                            anonymousNr++;
+                        }
 
                         String capacityStr = Interface.graphInt.getAgentCapacity().getText();
                         Integer capacity;
@@ -172,10 +176,13 @@ public class GridCity extends JPanel {
         this.height = thisHeight / this.gridSize;
 
         this.wasInit = true;
+        setVisible(true);
     }
 
     @Override
     public void paint(Graphics g) {
+
+        super.paintComponent(g);
 
         if (!wasInit)
             initThis();
@@ -219,8 +226,8 @@ public class GridCity extends JPanel {
             }
         }
 
-        //TODO draw camioes
         for (int i = 0; i < GarbageCollector.getInstance().getTruckAgents().size(); i++){
+
             Image img;
 
             TruckAgentBDI.typeOfWaste type = GarbageCollector.getInstance().getTruckAgents().get(i).getType();
@@ -240,17 +247,34 @@ public class GridCity extends JPanel {
                         width,
                         height,
                         null);
+
+            g.setColor(Color.red);
+
+            int fontSize = 11;
+            if(width< 64 )
+                fontSize = 8;
+            else if(width >=64 && width <= 99)
+                fontSize = 11;
+            else if(width >=100 && width <= 129)
+                fontSize = 13;
+            else if(width >=130 && width <= 169)
+                fontSize = 15;
+            else if(width >=170 && width <= 219)
+                fontSize = 17;
+
+            g.setFont(new Font("TimesRoman", Font.PLAIN, fontSize));
+            g.drawString("0/100",
+                   GarbageCollector.getInstance().getTrucksLoc()[i].y * width + width/20*7,
+                    GarbageCollector.getInstance().getTrucksLoc()[i].x * height + height/22*7);
+
         }
-
-
-
         //TODO draw contentores
         //TODO draw depositos
-
     }
 
     private void cleanCity(Graphics g) {
         g.setColor(new Color(139, 181, 74));
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
     }
+
 }

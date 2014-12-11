@@ -58,7 +58,7 @@ public class InterfaceAgentBDI {
      *---------------------------*/
     @Plan(trigger=@Trigger(goals=AGoal.class))
     protected void basicPlan() {
-        //intAgent.updateCity();
+        intAgent.updateCity();
 
        // System.out.println("UpdateCity");
         try {
@@ -108,22 +108,9 @@ public class InterfaceAgentBDI {
 
     public void updateCity(){
 
-        //TODO containerLoc = GarbageCollector.getInstance().getContainersLoc();
-        //TODO depositLoc = GarbageCollector.getInstance().getDepositsLoc();
-
-        Position[] trucksLoc_aux = GarbageCollector.getInstance().getTrucksLoc();
-
-        if(truckLoc!=null){
-            for(int i = 0; i < truckLoc.length; i++){
-                if(trucksLoc_aux[i].equals(truckLoc[i])){
-
-                }
-            }
-        }
-
-
-        truckLoc = new Position[trucksLoc_aux.length];
-        System.arraycopy(trucksLoc_aux,0,truckLoc,0,truckLoc.length);
+            //UPDATEINTERFACE
+        graphicInt.validate();
+        graphicInt.repaint();
     }
 
     public InterfaceAgentBDI getIntAgent() {

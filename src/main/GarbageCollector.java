@@ -92,8 +92,6 @@ public class GarbageCollector {
         return this.graphicInt;
     }
 
-    //TODO steps (List) of truckTrip
-
     public void togglePause(){
       //  for(TruckAgent truck : truckAgents)
            // truck.togglePause();
@@ -117,6 +115,7 @@ public class GarbageCollector {
 
     public void addTruckAgent(TruckAgentBDI truckAgent) {
         truckAgents.add(truckAgent);
+
     }
 
     public ArrayList<TruckAgentBDI> getTruckAgents() {
