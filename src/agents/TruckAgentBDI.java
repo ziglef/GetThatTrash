@@ -1,9 +1,9 @@
 package agents;
 
-
 import gui.GridCity;
 import map.Vertex;
-import plans.WanderPlan;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.alg.DijkstraShortestPath;
 import jadex.bdiv3.BDIAgent;
 import jadex.bdiv3.annotation.*;
 import jadex.micro.annotation.*;
@@ -195,29 +195,37 @@ public class TruckAgentBDI {
                 case 0:
                     newPos = new Position(pos.x, pos.y - 1);
                     if (isRoad(newPos)) {
-                        road = true;
-                        return newPos;
+                        if (isConnected(pos, newPos)) {
+                            road = true;
+                            return newPos;
+                        }
                     }
                     break;
                 case 1:
                     newPos = new Position(pos.x + 1, pos.y);
                     if (isRoad(newPos)) {
-                        road = true;
-                        return newPos;
+                        if (isConnected(pos, newPos)) {
+                            road = true;
+                            return newPos;
+                        }
                     }
                     break;
                 case 2:
                     newPos = new Position(pos.x, pos.y + 1);
                     if (isRoad(newPos)) {
-                        road = true;
-                        return newPos;
+                        if (isConnected(pos, newPos)) {
+                            road = true;
+                            return newPos;
+                        }
                     }
                     break;
                 case 3:
                     newPos = new Position(pos.x-1, pos.y);
                     if (isRoad(newPos)) {
-                        road = true;
-                        return newPos;
+                        if (isConnected(pos, newPos)) {
+                            road = true;
+                            return newPos;
+                        }
                     }
                     break;
                 default:
@@ -228,10 +236,14 @@ public class TruckAgentBDI {
     }
 
     public boolean isRoad(Position pos) {
-        Vertex v = gc.getCtB().getVertexByCoords(pos.x, pos.y);
-        if (v != null && v.getName().charAt(0) == 'v')
-            return true;
-        return false;
+        return gc.getCtB().getVertexByCoords(pos.x, pos.y).getName().charAt(0) == 'v';
+    }
+
+    public boolean isConnected(Position orig, Position dest) {
+        Vertex origin = gc.getCtB().getVertexByCoords(orig.x, orig.y);
+        Vertex destination = gc.getCtB().getVertexByCoords(dest.x, dest.y);
+
+        return gc.getCtB().getGraph().getEdge(origin, destination) != null;
     }
 
     public int randInt(int min, int max) {
@@ -244,8 +256,22 @@ public class TruckAgentBDI {
         return pos;
     }
 
+<<<<<<< HEAD
     public typeOfWaste getType() {
         return type;
+=======
+    public ArrayList<Position> getShortestPath(Position dest){
+        if( !isRoad(dest) ) return null;
+
+        ArrayList<Position> path = new ArrayList<>();
+
+        List<DefaultEdge> stepsEdges = DijkstraShortestPath.findPathBetween( gc.getCtB().getGraph(), gc.getCtB().getVertexByCoords(pos.x, pos.y), gc.getCtB().getVertexByCoords(dest.x, dest.y));
+        for( DefaultEdge e : stepsEdges ){
+            path.add(gc.getCtB().getGraph().getEdgeTarget(e).getPosition());
+        }
+
+        return path;
+>>>>>>> ce3149a5f35f666f5360f35e62ce157782750d3c
     }
 }
 
