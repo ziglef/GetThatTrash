@@ -24,12 +24,14 @@ public class Interface extends JFrame implements ActionListener{
     private ButtonGroup radioComponentGroup;
     private JRadioButton[] radioComponentType;
     private ButtonGroup radioComponentTypeGroup;
-    private JPanel optPane2;
+    private JPanel optPane2, infoPanel;
     private GridCity city;
     public static Interface graphInt;
-
     private JTextField agentName, agentCapacity;
-    private JLabel agentNameLabel, agentCapacityLabel;
+    private JLabel agentNameLabel;
+    private JLabel agentCapacityLabel;
+
+    private JLabel info;
 
     public Interface(final IExternalAccess agent) throws FileNotFoundException{
         //super("Garbage Collection");
@@ -45,9 +47,11 @@ public class Interface extends JFrame implements ActionListener{
         graphInt = this;
     }
 
+
+
     private void createAndDisplayGUI(IExternalAccess agent){
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        setPreferredSize(new Dimension(800, 600));
+        setPreferredSize(new Dimension(1024,768));
         setMinimumSize(new Dimension(800,600));
 
         JPanel contentPane = new JPanel();
@@ -58,36 +62,8 @@ public class Interface extends JFrame implements ActionListener{
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(gridSize, gridSize, 0,0));
 
-        /*CityMapBuilder ctB = new CityMapBuilder( new File( cityFile ) );
-        int currV = 1;
-
-        System.out.println("VertexSet: \n");
-        for( Vertex v : ctB.getVertices() ){
-            System.out.println( v.toString() );
-        }
-
-        for (int i = 0; i < gridSize; i++) {
-            for (int j = 0; j < gridSize; j++) {
-                String buttonTerrain = defaultTerrain;
-                JButton button = new JButton();
-                button.setContentAreaFilled(false);
-                button.setBorderPainted(true);
-                button.setBorder(BorderFactory.createEmptyBorder(0, 0, -1, -1)); // Right border = -1 to compensate for a swing bug
-                if( currV <= ctB.getVertices().size() ) {
-                    if (ctB.getVertexByName("v" + currV).getX() == i && ctB.getVertexByName("v" + currV).getY() == j) {
-                        buttonTerrain = ctB.getVertexByName("v" + currV).getProperty("img");
-                        currV++;
-                    }
-                }
-                button.setIcon(new ImageIcon("resources/assets/images/" + buttonTerrain));
-                buttonPanel.add(button);
-            }
-        }*/
-
         city = new GridCity("resources/graphs/City4", agent);
         contentPane.add(city, BorderLayout.CENTER);
-
-        //contentPane.add(buttonPanel, BorderLayout.CENTER);
 
         optPane2 = new JPanel();
         optPane2.setLayout(new GridLayout(0,1));
@@ -154,6 +130,20 @@ public class Interface extends JFrame implements ActionListener{
 
         contentPane.add(optPane2, BorderLayout.WEST);
 
+        JList list_objects = new JList();
+        JScrollPane scrollPane = new JScrollPane(list_objects);
+        contentPane.add(scrollPane, BorderLayout.EAST);
+
+        infoPanel = new JPanel();
+        infoPanel.setLayout(new FlowLayout());
+        infoPanel.setBorder(BorderFactory.createTitledBorder("Information"));
+        infoPanel.setVisible(false);
+        info  = new JLabel();
+        info.setForeground(Color.red);
+        info.setFont (info.getFont().deriveFont(16.0f));
+        infoPanel.add(info);
+        contentPane.add(infoPanel,BorderLayout.SOUTH);
+
         setContentPane(contentPane);
         pack();
         setVisible(true);
@@ -174,22 +164,6 @@ public class Interface extends JFrame implements ActionListener{
 
        return false;
     }
-
-
-   /* public static void main(String[] args){
-
-        SwingUtilities.invokeLater(new Runnable()
-        {
-            public void run()
-            {
-                try {
-                    new Interface().createAndDisplayGUI(/* "resources/graphs/City3";);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }*/
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -212,6 +186,26 @@ public class Interface extends JFrame implements ActionListener{
 
     public JTextField getAgentCapacity() {
         return agentCapacity;
+    }
+
+    public JRadioButton[] getRadioComponent() {
+        return radioComponent;
+    }
+
+    public JRadioButton[] getRadioComponentType() {
+        return radioComponentType;
+    }
+
+    public String getInfo() {
+        return info.getText();
+    }
+
+    public void setInfo(String info) {
+        this.info.setText(info);
+    }
+
+    public void setInfoVisible(boolean value) {
+         infoPanel.setVisible(value);
     }
 
 }

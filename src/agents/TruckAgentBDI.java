@@ -241,7 +241,11 @@ public class TruckAgentBDI {
     }
 
     public Position getPosition() {
-        return pos.clone();
+        return pos;
+    }
+
+    public typeOfWaste getType() {
+        return type;
     }
 }
 

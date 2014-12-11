@@ -103,6 +103,10 @@ public class GarbageCollector {
         return graphicInt != null && graphicInt.getPause();
     }
 
+    public void addTruckType(TruckAgentBDI.typeOfWaste type) {
+
+    }
+
     private boolean getMemory(){
         return memory;
     }
@@ -113,13 +117,12 @@ public class GarbageCollector {
 
     public void addTruckAgent(TruckAgentBDI truckAgent) {
         truckAgents.add(truckAgent);
-
-        System.out.println(truckAgents.size());
     }
 
     public ArrayList<TruckAgentBDI> getTruckAgents() {
         return truckAgents;
     }
+
 
 
 }

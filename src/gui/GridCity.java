@@ -35,11 +35,22 @@ public class GridCity extends JPanel {
     private final String defaultTerrain = "terrainTile3.png";
     private ImageIcon imgIcon;
     private ImageIcon truckUndifferentiated = new ImageIcon("resources/assets/images/truckundifferentiated.png");
+    private ImageIcon truckGlass = new ImageIcon("resources/assets/images/truckglass.png");
+    private ImageIcon truckPaper = new ImageIcon("resources/assets/images/truckpaper.png");
+    private ImageIcon truckPlastic = new ImageIcon("resources/assets/images/truckplastic.png");
     private CityMapBuilder ctB;
     private boolean wasInit;
     private InterfaceAgentBDI intAgent;
-
     private IExternalAccess agent;
+    private int object = -1;
+    private int type_object = -1;
+    private static final int TRUCK = 0;
+    private static final int COLLECTOR = 1;
+    private static final int DEPOSIT = 2;
+    private static final int GLASS = 0;
+    private static final int PAPER = 1;
+    private static final int PLASTIC = 2;
+    private static final int UNDIFFERENTIATED = 3;
 
     // Mouse listener for the images //
     private MouseListener listener = new MouseAdapter() {
@@ -48,81 +59,84 @@ public class GridCity extends JPanel {
             int column = e.getX() / width;
             int row = e.getY() / height;
 
+            for(int i = 0 ; i < Interface.graphInt.getRadioComponent().length; i++){
+                if(Interface.graphInt.getRadioComponent()[i].isSelected())
+                    object = i;
+            }
+
+            for(int i = 0 ; i < Interface.graphInt.getRadioComponentType().length; i++){
+                if(Interface.graphInt.getRadioComponentType()[i].isSelected())
+                    type_object = i;
+            }
 
             Vertex v = ctB.getVertexByCoords(row, column);
             if (v != null) { // se houver vertice
                 // se for 'v' ou seja estrada
-                if (v.getName().charAt(0) == 'v') {
 
-                    String name = Interface.graphInt.getAgentName().getText();
-                    if(name.length() == 0)
-                        name = "Anonymous";
+                    if (v.getName().charAt(0) == 'v' && object == TRUCK) {
 
-                    String capacityStr = Interface.graphInt.getAgentCapacity().getText();
-                    Integer capacity;
-                    if(capacityStr.length() == 0)
-                        capacity = 500;
-                    else
-                        capacity = Integer.parseInt(capacityStr);
+                        String name = Interface.graphInt.getAgentName().getText();
+                        if (name.length() == 0)
+                            name = "Anonymous";
 
-                    Position pos = new Position(v.getX(), v.getY());
+                        String capacityStr = Interface.graphInt.getAgentCapacity().getText();
+                        Integer capacity;
+                        if (capacityStr.length() == 0)
+                            capacity = 500;
+                        else
+                            capacity = Integer.parseInt(capacityStr);
 
-                    TruckAgentBDI.typeOfWaste type =  TruckAgentBDI.typeOfWaste.UNDIFFERENTIATED;
-                    Map<String, Object> agentArguments = new HashMap<>();
+                        Position pos = new Position(v.getX(), v.getY());
 
-                    System.out.println("------------------------");
-                    System.out.println("| >>> CLICK TO TRUCK!  |");
-                    System.out.println("------------------------");
-                    System.out.println("Name:" + name);
-                    System.out.println("Capacity:" + capacity);
-                    System.out.println("Position:" + pos.x +"-"+pos.y);
-                    System.out.println("Type:" + type);
+                        TruckAgentBDI.typeOfWaste type = TruckAgentBDI.typeOfWaste.UNDIFFERENTIATED;
+                        switch (type_object) {
+                            case GLASS:
+                                type = TruckAgentBDI.typeOfWaste.GLASS;
+                                break;
+                            case PAPER:
+                                type = TruckAgentBDI.typeOfWaste.PAPER;
+                                break;
+                            case PLASTIC:
+                                type = TruckAgentBDI.typeOfWaste.PLASTIC;
+                                break;
+                            case UNDIFFERENTIATED:
+                                type = TruckAgentBDI.typeOfWaste.UNDIFFERENTIATED;
+                                break;
+                            default:
+                                break;
+                        }
 
-                    agentArguments.put("Name", name);
-                    agentArguments.put("PositionX", pos.x);
-                    agentArguments.put("PositionY", pos.y);
-                    agentArguments.put("Capacity", capacity);
-                    agentArguments.put("Type", type);
-                    CreationInfo info = new CreationInfo(agentArguments);
+                        Map<String, Object> agentArguments = new HashMap<>();
 
-                    ThreadSuspendable sus = new ThreadSuspendable();
-                    IServiceProvider sp = agent.getServiceProvider();
+                        agentArguments.put("Name", name);
+                        agentArguments.put("PositionX", pos.x);
+                        agentArguments.put("PositionY", pos.y);
+                        agentArguments.put("Capacity", capacity);
+                        agentArguments.put("Type", type);
+                        CreationInfo info = new CreationInfo(agentArguments);
 
-                    IComponentManagementService cms = null;
-                    try{
-                        cms = SServiceProvider.getService(sp, IComponentManagementService.class,
-                                RequiredServiceInfo.SCOPE_PLATFORM).get(sus);
-                    }catch (NullPointerException ee){
-                        ee.printStackTrace();
+                        ThreadSuspendable sus = new ThreadSuspendable();
+                        IServiceProvider sp = agent.getServiceProvider();
+
+                        IComponentManagementService cms = null;
+                        try {
+                            cms = SServiceProvider.getService(sp, IComponentManagementService.class,
+                                    RequiredServiceInfo.SCOPE_PLATFORM).get(sus);
+                        } catch (NullPointerException ee) {
+                            ee.printStackTrace();
+                        }
+
+                        IComponentIdentifier ici = cms.createComponent(TruckAgentBDI.AGENT_PATH, info).getFirstResult(sus);
+                        Interface.graphInt.setInfoVisible(false);
+
+                        validate();
+                        repaint();
+
                     }
-
-                    IComponentIdentifier ici = cms.createComponent(TruckAgentBDI.AGENT_PATH, info).getFirstResult(sus);
-                    System.out.println("started: " + ici);
-
-
-                    validate();
-                    repaint();
-
-                   /* if (info == null) System.out.println("INFO IS NULL");
-
-                    if (GarbageCollector.getInstance() == null)
-                        System.out.println("INSTANCE IS NULL");
-
-                    System.out.println("Working Directory = " +
-                            System.getProperty("user.dir"));
-
-                    try {
-                        GarbageCollector.getInstance().launchAgent(TruckAgentBDI.AGENT_PATH,info);
-                    } catch (FileNotFoundException e1) {
-                        e1.printStackTrace();
-                    }*/
-
-
-                }else {
-                System.out.println("Não é estrada");
-                }
-                //System.out.println(v.toString());
-            } else { // se nao houver
+            } else if(v==null && object == TRUCK){
+                Interface.graphInt.setInfoVisible(true);
+                Interface.graphInt.setInfo("ERROR: You can' add a truck out of road!");
+            }else{ // imprimie coordenadas so para teste
                 System.out.println("X: " + column + "\nY: " + row + "\n");
             }
 
@@ -207,10 +221,25 @@ public class GridCity extends JPanel {
 
         //TODO draw camioes
         for (int i = 0; i < GarbageCollector.getInstance().getTruckAgents().size(); i++){
-            g.drawImage(truckUndifferentiated.getImage(),
+            Image img;
+
+            TruckAgentBDI.typeOfWaste type = GarbageCollector.getInstance().getTruckAgents().get(i).getType();
+
+            if(type == TruckAgentBDI.typeOfWaste.GLASS)
+                img = truckGlass.getImage();
+            else if(type == TruckAgentBDI.typeOfWaste.PAPER)
+                img = truckPaper.getImage();
+            else if(type == TruckAgentBDI.typeOfWaste.PLASTIC)
+                img = truckPlastic.getImage();
+            else
+                img = truckUndifferentiated.getImage();
+
+            g.drawImage(img,
                         GarbageCollector.getInstance().getTrucksLoc()[i].y * width,
                         GarbageCollector.getInstance().getTrucksLoc()[i].x * height,
-                        width,height,null);
+                        width,
+                        height,
+                        null);
         }
 
 

@@ -12,16 +12,4 @@ public class Position {
         this.y = y;
     }
 
-    public void autoMove() {
-
-        //TODO Movimento dos camiões
-
-    }
-
-    //TODO Equals, toString
-    @Override
-    public Position clone() {
-        return new Position(this.x, this.y);
-    }
-
 }
