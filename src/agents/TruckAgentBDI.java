@@ -317,7 +317,25 @@ public class TruckAgentBDI {
 
         ArrayList<Position> path = new ArrayList<>();
 
-        List<DefaultEdge> stepsEdges = DijkstraShortestPath.findPathBetween( gc.getCtB().getGraph(), gc.getCtB().getVertexByCoords(pos.x, pos.y), gc.getCtB().getVertexByCoords(dest.x, dest.y));
+        ArrayList<Position> neighbors = new ArrayList<>();
+        if( isConnected(dest, new Position(dest.x, dest.y - 1)) ) neighbors.add(new Position(dest.x, dest.y - 1));
+        if( isConnected(dest, new Position(dest.x + 1, dest.y)) ) neighbors.add(new Position(dest.x + 1, dest.y));
+        if( isConnected(dest, new Position(dest.x, dest.y + 1)) ) neighbors.add(new Position(dest.x, dest.y + 1));
+        if( isConnected(dest, new Position(dest.x - 1, dest.y)) ) neighbors.add(new Position(dest.x - 1, dest.y));
+
+        int min = Integer.MAX_VALUE;
+        int minIndex = 0;
+        int i = 0;
+        for( Position p : neighbors ){
+            int pSize = DijkstraShortestPath.findPathBetween( gc.getCtB().getGraph(), gc.getCtB().getVertexByCoords(pos.x, pos.y), gc.getCtB().getVertexByCoords(p.x, p.y)).size();
+            if( pSize < min ){
+                min = pSize;
+                minIndex = i;
+            }
+            i++;
+        }
+
+        List<DefaultEdge> stepsEdges = DijkstraShortestPath.findPathBetween( gc.getCtB().getGraph(), gc.getCtB().getVertexByCoords(pos.x, pos.y), gc.getCtB().getVertexByCoords(neighbors.get(minIndex).x, neighbors.get(minIndex).y));
         for( DefaultEdge e : stepsEdges ){
             path.add(gc.getCtB().getGraph().getEdgeTarget(e).getPosition());
         }
