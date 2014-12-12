@@ -4,7 +4,6 @@ import javax.swing.*;
 
 import agents.InterfaceAgentBDI;
 import agents.TruckAgentBDI;
-import jadex.bdiv3.BDIAgent;
 import jadex.bridge.IComponentIdentifier;
 import jadex.bridge.IExternalAccess;
 import jadex.bridge.service.IServiceProvider;
@@ -13,8 +12,8 @@ import jadex.bridge.service.search.SServiceProvider;
 import jadex.bridge.service.types.cms.CreationInfo;
 import jadex.bridge.service.types.cms.IComponentManagementService;
 import jadex.commons.future.ThreadSuspendable;
-import jadex.micro.annotation.AgentArgument;
 import main.Collector;
+import main.Deposit;
 import main.GarbageCollector;
 import main.Position;
 import map.CityMapBuilder;
@@ -25,7 +24,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,6 +41,11 @@ public class GridCity extends JPanel {
     private ImageIcon containerPlastic = new ImageIcon("resources/assets/images/containerplastic.png");
     private ImageIcon containerPaper = new ImageIcon("resources/assets/images/containerpaper.png");
     private ImageIcon containerUndifferentiated = new ImageIcon("resources/assets/images/containerundifferentiated.png");
+    private ImageIcon depositUndifferentiated = new ImageIcon("resources/assets/images/depositundifferentiated.png");
+    private ImageIcon depositPaper = new ImageIcon("resources/assets/images/depositPaper.png");
+    private ImageIcon depositPlastic = new ImageIcon("resources/assets/images/depositplastic.png");
+    private ImageIcon depositGlass = new ImageIcon("resources/assets/images/depositglass.png");
+
     private CityMapBuilder ctB;
     private boolean wasInit;
     private InterfaceAgentBDI intAgent;
@@ -59,6 +62,7 @@ public class GridCity extends JPanel {
     private int anonymousNr = 1;
     public static GridCity city;
     private Collector collector;
+    private Deposit deposit;
     private int fontSize;
 
     // Mouse listener for the images //
@@ -166,18 +170,19 @@ public class GridCity extends JPanel {
                           capacity = 100;
                       collector = new Collector(name,new Position(row,column),type,capacity);
                    }
-                   if(object == DEPOSIT){
-                       System.out.println("Podes adicionar aqui um deposito");
+                   if(object == DEPOSIT) {
+                       deposit = new Deposit(name, new Position(row, column), type);
                    }
+
                    Interface.graphInt.setInfoVisible(false);
                }else{
                    if(object == COLLECTOR){
                        Interface.graphInt.setInfoVisible(true);
-                       Interface.graphInt.setInfo("ERROR: Collector should be add near a road!");
+                       Interface.graphInt.setInfo("ERROR: Collector should be added near a road!");
                    }
                    if(object == DEPOSIT){
                        Interface.graphInt.setInfoVisible(true);
-                       Interface.graphInt.setInfo("ERROR: Deposit should be add near a road!");
+                       Interface.graphInt.setInfo("ERROR: Deposit should be added near a road!");
                    }
                }
             }
@@ -331,8 +336,35 @@ public class GridCity extends JPanel {
                     GarbageCollector.getInstance().getCollectorsLoc()[i].x * height + height/22*7);
 
         }
-        //TODO draw contentores
+
         //TODO draw depositos
+        for (int i = 0; i < GarbageCollector.getInstance().getDeposits().size(); i++) {
+
+            Image img;
+
+            GarbageCollector.typeOfWaste type = GarbageCollector.getInstance().getDeposits().get(i).getType();
+
+            if(type == GarbageCollector.typeOfWaste.GLASS)
+                img = depositGlass.getImage();
+            else if(type == GarbageCollector.typeOfWaste.PAPER)
+                img = depositPaper.getImage();
+            else if(type == GarbageCollector.typeOfWaste.PLASTIC)
+                img = depositPlastic.getImage();
+            else
+                img = depositUndifferentiated.getImage();
+
+            g.drawImage(img,
+                    GarbageCollector.getInstance().getDepositsLoc()[i].y * width,
+                    GarbageCollector.getInstance().getDepositsLoc()[i].x * height,
+                    width,
+                    height,
+                    null);
+
+            g.setColor(Color.black);
+            g.drawString(GarbageCollector.getInstance().getDeposits().get(i).getOccupiedCapacity()+"",
+                    GarbageCollector.getInstance().getDepositsLoc()[i].y * width + width/16*7,
+                    GarbageCollector.getInstance().getDepositsLoc()[i].x * height + height/28*7);
+        }
     }
 
     private void cleanCity(Graphics g) {

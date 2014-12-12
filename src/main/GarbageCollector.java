@@ -23,6 +23,7 @@ public class GarbageCollector {
     private Interface graphicInt;
     private static ArrayList<TruckAgentBDI> truckAgents;
     private static ArrayList<Collector> collectors;
+    private static ArrayList<Deposit> deposits;
     private ThreadSuspendable t;
     private IExternalAccess ia;
     private IComponentManagementService icms;
@@ -39,6 +40,7 @@ public class GarbageCollector {
     protected GarbageCollector(){
         truckAgents = new ArrayList<>();
         collectors = new ArrayList<>();
+        deposits = new ArrayList<>();
     }
 
     /*------------------------------
@@ -92,6 +94,18 @@ public class GarbageCollector {
         return aux;
     }
 
+    public Position[] getDepositsLoc(){
+
+        Position[] aux = new Position[deposits.size()];
+        int i = 0;
+        for(Deposit deposit : deposits) {
+            aux[i] = deposit.getPosition();
+            i++;
+        }
+
+        return aux;
+    }
+
     public TruckAgentBDI getTruckByLoc(Position pos){
         for(TruckAgentBDI truck : truckAgents){
             if(truck.getPosition().equals(pos))
@@ -133,7 +147,6 @@ public class GarbageCollector {
 
     public void addTruckAgent(TruckAgentBDI truckAgent) {
         truckAgents.add(truckAgent);
-
     }
 
     public ArrayList<TruckAgentBDI> getTruckAgents() {
@@ -146,6 +159,14 @@ public class GarbageCollector {
 
     public void addCollector(Collector collector) {
         collectors.add(collector);
+    }
+
+    public static ArrayList<Deposit> getDeposits() {
+        return deposits;
+    }
+
+    public void addDeposit(Deposit deposit) {
+        deposits.add(deposit);
     }
 
 

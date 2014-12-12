@@ -1,6 +1,7 @@
 package agents;
 
 import gui.GridCity;
+import jadex.bridge.service.types.cms.IComponentManagementService;
 import map.Vertex;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.alg.DijkstraShortestPath;
@@ -128,7 +129,6 @@ public class TruckAgentBDI {
     *---------------------------*/
     @Plan(trigger=@Trigger(goals=WanderAroundCity.class))
     protected void truckPlan() {
-
 
         do{
             try {
