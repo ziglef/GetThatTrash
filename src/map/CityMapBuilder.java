@@ -79,15 +79,15 @@ public class CityMapBuilder extends MapBuilder {
 
         // right
         if( getVertexByCoords(x+1, y) != null )
-            return getVertexByCoords(x-1, y).getName().charAt(0) == c;
+            return getVertexByCoords(x+1, y).getName().charAt(0) == c;
 
         // top
         if( getVertexByCoords(x, y-1) != null )
-            return getVertexByCoords(x-1, y).getName().charAt(0) == c;
+            return getVertexByCoords(x, y-1).getName().charAt(0) == c;
 
         // bottom
         if( getVertexByCoords(x, y+1) != null )
-            return getVertexByCoords(x-1, y).getName().charAt(0) == c;
+            return getVertexByCoords(x, y+1).getName().charAt(0) == c;
 
         return false;
     }

@@ -20,7 +20,7 @@ import java.util.Random;
 @Arguments({
         @Argument(name = "Name", clazz = String.class, defaultvalue = "Anony"),
         @Argument(name = "Capacity", clazz = Integer.class, defaultvalue = "500"),
-        @Argument(name = "Type", clazz = TruckAgentBDI.typeOfWaste.class),
+        @Argument(name = "Type", clazz = GarbageCollector.typeOfWaste.class),
         @Argument(name = "PositionX", clazz = Integer.class),
         @Argument(name = "PositionY", clazz = Integer.class)
 })
@@ -39,7 +39,7 @@ public class TruckAgentBDI {
     int capacity;
 
     @Belief
-    typeOfWaste type = typeOfWaste.UNDIFFERENTIATED;
+    GarbageCollector.typeOfWaste type = GarbageCollector.typeOfWaste.UNDIFFERENTIATED;
 
     @Belief
     Position pos;
@@ -70,19 +70,15 @@ public class TruckAgentBDI {
     private GridCity gc;
 
 
-    public static enum typeOfWaste {
-        PAPER, PLASTIC, GLASS, UNDIFFERENTIATED
-    }
-
     /*------------------------------
         Agent
     *-----------------------------*/
     @AgentCreated
     public void init() {
         name = (String) agent.getArgument("Name");
-        type = (typeOfWaste) agent.getArgument("Type");
+        type = (GarbageCollector.typeOfWaste) agent.getArgument("Type");
         if(type==null)
-            type=typeOfWaste.UNDIFFERENTIATED;
+            type=GarbageCollector.typeOfWaste.UNDIFFERENTIATED;
         pos = new Position(0,0);
         pos.x = (Integer) agent.getArgument("PositionX");
         pos.y = (Integer) agent.getArgument("PositionY");
@@ -97,21 +93,11 @@ public class TruckAgentBDI {
         mission = false;
         gc = GarbageCollector.getInstance().getInterface().getCity();
 
-        System.out.println("------------------------");
-        System.out.println("| >>> CREATE A TRUCK!  |");
-        System.out.println("------------------------");
-        System.out.println("Name:" + name);
-        System.out.println("Capacity:" + capacity);
-        System.out.println("Position:" + pos.x +"-"+pos.y);
-        System.out.println("Type:" + type);
     }
 
     @AgentBody
     public void body() {
         // agent.dispatchTopLevelGoal(new CheckContainer());
-        System.out.println("------------------------");
-        System.out.println("| >>> BODY OF A TRUCK!  |");
-        System.out.println("------------------------");
         agent.dispatchTopLevelGoal(new WanderAroundCity()).get();
         // agent.dispatchTopLevelGoal(new DumpWaste());
     }
@@ -178,7 +164,6 @@ public class TruckAgentBDI {
 
         pos = autoMove();
 
-        System.out.println(pos.x + "-" + pos.y);
         // have a trip to do
        /* if (steps.size() > 0) {
             System.out.println("steps.size() > 0");
@@ -218,7 +203,7 @@ public class TruckAgentBDI {
     }
 
 
-    public typeOfWaste getType() {
+    public GarbageCollector.typeOfWaste getType() {
         return type;
     }
 
@@ -235,6 +220,19 @@ public class TruckAgentBDI {
         return path;
 
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getCapacity() {
+        return capacity;
+    }
+
+    public int getOccupiedCapacity() {
+        return occupiedCapacity;
+    }
+
 }
 
 

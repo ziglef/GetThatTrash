@@ -22,17 +22,23 @@ public class GarbageCollector {
     *-----------------------------*/
     private Interface graphicInt;
     private static ArrayList<TruckAgentBDI> truckAgents;
+    private static ArrayList<Collector> collectors;
     private ThreadSuspendable t;
     private IExternalAccess ia;
     private IComponentManagementService icms;
     private static GarbageCollector instance;
     public boolean memory = true, communication = true;
 
+    public static enum typeOfWaste {
+        PAPER, PLASTIC, GLASS, UNDIFFERENTIATED
+    }
+
     /*------------------------------
         Constructors
     *-----------------------------*/
     protected GarbageCollector(){
         truckAgents = new ArrayList<>();
+        collectors = new ArrayList<>();
     }
 
     /*------------------------------
@@ -74,6 +80,18 @@ public class GarbageCollector {
         return aux;
     }
 
+    public Position[] getCollectorsLoc() {
+
+        Position[] aux = new Position[collectors.size()];
+        int i = 0;
+        for(Collector collector : collectors) {
+            aux[i] = collector.getPosition();
+            i++;
+        }
+
+        return aux;
+    }
+
     public TruckAgentBDI getTruckByLoc(Position pos){
         for(TruckAgentBDI truck : truckAgents){
             if(truck.getPosition().equals(pos))
@@ -101,7 +119,7 @@ public class GarbageCollector {
         return graphicInt != null && graphicInt.getPause();
     }
 
-    public void addTruckType(TruckAgentBDI.typeOfWaste type) {
+    public void addTruckType(typeOfWaste type) {
 
     }
 
@@ -120,6 +138,14 @@ public class GarbageCollector {
 
     public ArrayList<TruckAgentBDI> getTruckAgents() {
         return truckAgents;
+    }
+
+    public ArrayList<Collector> getCollectors() {
+        return collectors;
+    }
+
+    public void addCollector(Collector collector) {
+        collectors.add(collector);
     }
 
 

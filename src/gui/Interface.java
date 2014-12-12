@@ -61,7 +61,7 @@ public class Interface extends JFrame implements ActionListener{
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(gridSize, gridSize, 0,0));
 
-        city = new GridCity("resources/graphs/City3", agent);
+        city = new GridCity("resources/graphs/City5", agent);
         contentPane.add(city, BorderLayout.CENTER);
 
         optPane2 = new JPanel();
@@ -73,9 +73,10 @@ public class Interface extends JFrame implements ActionListener{
         helpBTN = new JButton("Help");
         exitBTN = new JButton("Exit");
         agentName = new JTextField("");
+        agentName.setMaximumSize(new Dimension(100,5));
         agentCapacity = new JTextField("");
-        agentNameLabel = new JLabel("Agent name: ");
-        agentCapacityLabel = new JLabel("Agent capacity: ");
+        agentNameLabel = new JLabel("Identifier: ");
+        agentCapacityLabel = new JLabel("Capacity: ");
 
         optPane2.add(newBTN);
         newBTN.addActionListener(this);

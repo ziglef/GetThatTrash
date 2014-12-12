@@ -14,6 +14,7 @@ import jadex.bridge.service.types.cms.CreationInfo;
 import jadex.bridge.service.types.cms.IComponentManagementService;
 import jadex.commons.future.ThreadSuspendable;
 import jadex.micro.annotation.AgentArgument;
+import main.Collector;
 import main.GarbageCollector;
 import main.Position;
 import map.CityMapBuilder;
@@ -38,6 +39,10 @@ public class GridCity extends JPanel {
     private ImageIcon truckGlass = new ImageIcon("resources/assets/images/truckglass.png");
     private ImageIcon truckPaper = new ImageIcon("resources/assets/images/truckpaper.png");
     private ImageIcon truckPlastic = new ImageIcon("resources/assets/images/truckplastic.png");
+    private ImageIcon containerGlass = new ImageIcon("resources/assets/images/containerglass.png");
+    private ImageIcon containerPlastic = new ImageIcon("resources/assets/images/containerplastic.png");
+    private ImageIcon containerPaper = new ImageIcon("resources/assets/images/containerpaper.png");
+    private ImageIcon containerUndifferentiated = new ImageIcon("resources/assets/images/containerundifferentiated.png");
     private CityMapBuilder ctB;
     private boolean wasInit;
     private InterfaceAgentBDI intAgent;
@@ -53,6 +58,8 @@ public class GridCity extends JPanel {
     private static final int UNDIFFERENTIATED = 3;
     private int anonymousNr = 1;
     public static GridCity city;
+    private Collector collector;
+    private int fontSize;
 
     // Mouse listener for the images //
     private MouseListener listener = new MouseAdapter() {
@@ -71,44 +78,56 @@ public class GridCity extends JPanel {
                     type_object = i;
             }
 
+            String name = Interface.graphInt.getAgentName().getText();
+            if (name.length() == 0) {
+                name = "Anony" + anonymousNr;
+                anonymousNr++;
+            }
+
+            String capacityStr = Interface.graphInt.getAgentCapacity().getText();
+            Integer capacity;
+            if (capacityStr.length() == 0)
+                capacity = 500;
+            else
+                capacity = Integer.parseInt(capacityStr);
+
+            GarbageCollector.typeOfWaste type = GarbageCollector.typeOfWaste.UNDIFFERENTIATED;
+            switch (type_object) {
+                case GLASS:
+                    type = GarbageCollector.typeOfWaste.GLASS;
+                    break;
+                case PAPER:
+                    type = GarbageCollector.typeOfWaste.PAPER;
+                    break;
+                case PLASTIC:
+                    type = GarbageCollector.typeOfWaste.PLASTIC;
+                    break;
+                case UNDIFFERENTIATED:
+                    type = GarbageCollector.typeOfWaste.UNDIFFERENTIATED;
+                    break;
+                default:
+                    break;
+            }
+
+            fontSize = 11;
+            if(width < 64 )
+                fontSize = 8;
+            else if(width >=64 && width <= 99)
+                fontSize = 11;
+            else if(width >=100 && width <= 129)
+                fontSize = 13;
+            else if(width >=130 && width <= 169)
+                fontSize = 15;
+            else if(width >=170 && width <= 219)
+                fontSize = 17;
+
             Vertex v = ctB.getVertexByCoords(row, column);
             if (v != null) { // se houver vertice
                 // se for 'v' ou seja estrada
 
                     if (v.getName().charAt(0) == 'v' && object == TRUCK) {
 
-                        String name = Interface.graphInt.getAgentName().getText();
-                        if (name.length() == 0) {
-                            name = "Anony" + anonymousNr;
-                            anonymousNr++;
-                        }
-
-                        String capacityStr = Interface.graphInt.getAgentCapacity().getText();
-                        Integer capacity;
-                        if (capacityStr.length() == 0)
-                            capacity = 500;
-                        else
-                            capacity = Integer.parseInt(capacityStr);
-
                         Position pos = new Position(v.getX(), v.getY());
-
-                        TruckAgentBDI.typeOfWaste type = TruckAgentBDI.typeOfWaste.UNDIFFERENTIATED;
-                        switch (type_object) {
-                            case GLASS:
-                                type = TruckAgentBDI.typeOfWaste.GLASS;
-                                break;
-                            case PAPER:
-                                type = TruckAgentBDI.typeOfWaste.PAPER;
-                                break;
-                            case PLASTIC:
-                                type = TruckAgentBDI.typeOfWaste.PLASTIC;
-                                break;
-                            case UNDIFFERENTIATED:
-                                type = TruckAgentBDI.typeOfWaste.UNDIFFERENTIATED;
-                                break;
-                            default:
-                                break;
-                        }
 
                         Map<String, Object> agentArguments = new HashMap<>();
 
@@ -140,10 +159,28 @@ public class GridCity extends JPanel {
             } else if(v==null && object == TRUCK){
                 Interface.graphInt.setInfoVisible(true);
                 Interface.graphInt.setInfo("ERROR: You can' add a truck out of road!");
-            }else{ // imprimie coordenadas so para teste
-                System.out.println("X: " + column + "\nY: " + row + "\n");
+            }else{ // se nao for vértice
+               if(ctB.checkNeighborsFor(row,column,'v')) {
+                   if(object == COLLECTOR){
+                      if(capacityStr.length() == 0)
+                          capacity = 100;
+                      collector = new Collector(name,new Position(row,column),type,capacity);
+                   }
+                   if(object == DEPOSIT){
+                       System.out.println("Podes adicionar aqui um deposito");
+                   }
+                   Interface.graphInt.setInfoVisible(false);
+               }else{
+                   if(object == COLLECTOR){
+                       Interface.graphInt.setInfoVisible(true);
+                       Interface.graphInt.setInfo("ERROR: Collector should be add near a road!");
+                   }
+                   if(object == DEPOSIT){
+                       Interface.graphInt.setInfoVisible(true);
+                       Interface.graphInt.setInfo("ERROR: Deposit should be add near a road!");
+                   }
+               }
             }
-
         }
     };
 
@@ -183,7 +220,7 @@ public class GridCity extends JPanel {
     public void paint(Graphics g) {
 
         super.paintComponent(g);
-
+        g.setFont(new Font("TimesRoman", Font.BOLD, fontSize));
         if (!wasInit)
             initThis();
         else {
@@ -230,24 +267,20 @@ public class GridCity extends JPanel {
 
             Image img;
 
-            TruckAgentBDI.typeOfWaste type = GarbageCollector.getInstance().getTruckAgents().get(i).getType();
+            GarbageCollector.typeOfWaste type = GarbageCollector.getInstance().getTruckAgents().get(i).getType();
 
-            if(type == TruckAgentBDI.typeOfWaste.GLASS) {
+            if(type == GarbageCollector.typeOfWaste.GLASS)
                 img = truckGlass.getImage();
-                g.setColor(new Color(24,167,78));
-            }
-            else if(type == TruckAgentBDI.typeOfWaste.PAPER) {
+
+            else if(type == GarbageCollector.typeOfWaste.PAPER)
                 img = truckPaper.getImage();
-                g.setColor(Color.blue);
-            }
-            else if(type == TruckAgentBDI.typeOfWaste.PLASTIC) {
+
+            else if(type == GarbageCollector.typeOfWaste.PLASTIC)
                 img = truckPlastic.getImage();
-                g.setColor(new Color(255,255,0));
-            }
-            else {
+
+            else
                 img = truckUndifferentiated.getImage();
-                g.setColor(Color.black);
-            }
+
 
             g.drawImage(img,
                         GarbageCollector.getInstance().getTrucksLoc()[i].y * width,
@@ -256,24 +289,46 @@ public class GridCity extends JPanel {
                         height,
                         null);
 
-           // g.setColor(Color.red);
 
-            int fontSize = 11;
-            if(width< 64 )
-                fontSize = 8;
-            else if(width >=64 && width <= 99)
-                fontSize = 11;
-            else if(width >=100 && width <= 129)
-                fontSize = 13;
-            else if(width >=130 && width <= 169)
-                fontSize = 15;
-            else if(width >=170 && width <= 219)
-                fontSize = 17;
-
-            g.setFont(new Font("TimesRoman", Font.PLAIN, fontSize));
-            g.drawString("0/100",
+            g.setColor(Color.black);
+            g.drawString(GarbageCollector.getInstance().getTruckAgents().get(i).getOccupiedCapacity() +
+                    "/"+GarbageCollector.getInstance().getTruckAgents().get(i).getCapacity(),
                    GarbageCollector.getInstance().getTrucksLoc()[i].y * width + width/20*7,
                     GarbageCollector.getInstance().getTrucksLoc()[i].x * height + height/22*7);
+            g.drawString(GarbageCollector.getInstance().getTruckAgents().get(i).getName(),
+                    GarbageCollector.getInstance().getTrucksLoc()[i].y * width + width/28*7,
+                    GarbageCollector.getInstance().getTrucksLoc()[i].x * height + height/8*7);
+
+        }
+
+        for (int i = 0; i < GarbageCollector.getInstance().getCollectors().size(); i++) {
+
+            Image img;
+            GarbageCollector.typeOfWaste type = GarbageCollector.getInstance().getCollectors().get(i).getType();
+
+
+            if(type == GarbageCollector.typeOfWaste.GLASS)
+                img = containerGlass.getImage();
+            else if(type == GarbageCollector.typeOfWaste.PAPER)
+                img = containerPaper.getImage();
+            else if(type == GarbageCollector.typeOfWaste.PLASTIC)
+                img = containerPlastic.getImage();
+            else
+                img = containerUndifferentiated.getImage();
+
+            g.drawImage(img,
+                    GarbageCollector.getInstance().getCollectorsLoc()[i].y * width,
+                    GarbageCollector.getInstance().getCollectorsLoc()[i].x * height,
+                    width,
+                    height,
+                    null);
+
+
+            g.setColor(Color.black);
+            g.drawString(GarbageCollector.getInstance().getCollectors().get(i).getOccupiedCapacity() +
+                            "/"+GarbageCollector.getInstance().getCollectors().get(i).getCapacity(),
+                    GarbageCollector.getInstance().getCollectorsLoc()[i].y * width + width/20*7,
+                    GarbageCollector.getInstance().getCollectorsLoc()[i].x * height + height/22*7);
 
         }
         //TODO draw contentores

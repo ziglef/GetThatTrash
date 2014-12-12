@@ -1,7 +1,71 @@
 package main;
 
-/**
- * Created by Tiago on 11/12/2014.
- */
-public class Collector {
+
+import java.util.Random;
+
+public class Collector implements Runnable{
+
+
+    private Position pos;
+    private GarbageCollector.typeOfWaste type;
+    private boolean pause;
+    private int occupiedCapacity, capacity;
+    private String id;
+    private Thread t;
+    private static final long SLEEP = 4000;
+    private static final int MAX_VALUE_WASTE_INC = 10;
+    private Random rn;
+
+    public Collector(String id, Position pos, GarbageCollector.typeOfWaste type, int capacity){
+        this.id = id;
+        this.pos = pos;
+        this.type = type;
+        this.capacity = capacity;
+        this.pause = false;
+        this.occupiedCapacity = 0;
+        this.rn = new Random();
+        this.t = new Thread(this);
+        this.t.start();
+        GarbageCollector.getInstance().addCollector(this);
+    }
+
+    @Override
+    public void run() {
+
+        int increment;
+
+        while(!pause) {
+
+            try {
+                t.sleep(SLEEP);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            increment = rn.nextInt(MAX_VALUE_WASTE_INC+1);
+            if(occupiedCapacity < capacity){
+                if(occupiedCapacity + increment > capacity)
+                    occupiedCapacity = capacity;
+                else
+                    occupiedCapacity+=increment;
+                System.out.println("Capacity:" + occupiedCapacity);
+            }
+        }
+    }
+
+    public GarbageCollector.typeOfWaste getType() {
+        return type;
+    }
+
+    public Position getPosition() {
+        return pos;
+    }
+
+    public int getOccupiedCapacity() {
+        return occupiedCapacity;
+    }
+
+    public int getCapacity() {
+        return capacity;
+    }
 }
