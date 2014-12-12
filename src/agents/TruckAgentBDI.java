@@ -2,6 +2,7 @@ package agents;
 
 import gui.GridCity;
 import jadex.bridge.service.types.cms.IComponentManagementService;
+import main.Collector;
 import map.Vertex;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.alg.DijkstraShortestPath;
@@ -64,11 +65,12 @@ public class TruckAgentBDI {
     boolean communication = false;
 
     @Belief
-    public static final long SLEEP = 500;
+    public static final long SLEEP = 300;
 
     private List<Position> steps;
     public static final String AGENT_PATH = "out\\production\\AIAD\\agents\\TruckAgentBDI.class";
     private GridCity gc;
+    private int remainderCapacity = 0;
 
 
     /*------------------------------
@@ -98,9 +100,9 @@ public class TruckAgentBDI {
 
     @AgentBody
     public void body() {
-        // agent.dispatchTopLevelGoal(new CheckContainer());
+        agent.dispatchTopLevelGoal(new CheckContainer());
         agent.dispatchTopLevelGoal(new WanderAroundCity()).get();
-        // agent.dispatchTopLevelGoal(new DumpWaste());
+        agent.dispatchTopLevelGoal(new GoToDeposit());
     }
 
     @AgentKilled
@@ -124,11 +126,37 @@ public class TruckAgentBDI {
 
     }
 
+    @Goal(excludemode = Goal.ExcludeMode.Never, retry = true, orsuccess = false)
+    public class CheckContainer {
+
+        @GoalResult
+        protected int r;
+
+        @GoalContextCondition(rawevents = @jadex.bdiv3.annotation.RawEvent(value="pause"))
+        public boolean checkContext() {
+            return !pause;
+        }
+
+    }
+
+    @Goal(excludemode = Goal.ExcludeMode.Never, retry = true, orsuccess = false)
+    public class GoToDeposit {
+
+        @GoalResult
+        protected int r;
+
+        @GoalContextCondition(rawevents = @jadex.bdiv3.annotation.RawEvent(value="pause"))
+        public boolean checkContext() {
+            return !pause;
+        }
+
+    }
+
     /*-----------------------------
      Plans
     *---------------------------*/
     @Plan(trigger=@Trigger(goals=WanderAroundCity.class))
-    protected void truckPlan() {
+    protected void walkAroundCity() {
 
         do{
             try {
@@ -136,7 +164,7 @@ public class TruckAgentBDI {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }while(isPause());
+        }while(GarbageCollector.getInstance().getPause());
 
         updatePos();
         gc.validate();
@@ -149,12 +177,64 @@ public class TruckAgentBDI {
         }
     }
 
+    @Plan(trigger=@Trigger(goals=CheckContainer.class))
+    protected void checkContainer() {
+
+        do{
+            try {
+                Thread.sleep(SLEEP);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }while(GarbageCollector.getInstance().getPause());
+
+
+        //TODO verificar se um contentor está adjacentes à POS atual
+        // se tiver um contentor adjacente, verificar o seu tipo, apanhar o lixo e se exceder a minha capacidade, deixar lá o resto
+        Collector collector = GarbageCollector.getInstance().checkCollectorPos(pos);
+        if(collector != null) {
+
+            System.out.println("Passei por um contentor do meu tipo e vou apanhar o lixo");
+            if(collector.getType() == type){
+                try {
+                    Thread.sleep(SLEEP);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                if(occupiedCapacity < capacity) {
+                    if (occupiedCapacity + collector.getOccupiedCapacity() > capacity) {
+                        remainderCapacity = occupiedCapacity + collector.getOccupiedCapacity() - capacity;
+                        occupiedCapacity = capacity;
+                        GarbageCollector.getInstance().setCollectorOcuppiedCapacity(collector.getPosition(), remainderCapacity);
+                    } else {
+                        occupiedCapacity += collector.getOccupiedCapacity();
+                        GarbageCollector.getInstance().setCollectorOcuppiedCapacity(collector.getPosition(), 0);
+                    }
+                }
+            }
+        }
+    }
+
+    @Plan(trigger=@Trigger(goals=GoToDeposit.class))
+    protected void GoToDeposit() {
+
+        do{
+            try {
+                Thread.sleep(SLEEP);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }while(GarbageCollector.getInstance().getPause());
+
+
+        //TODO se tiver memory = true, calcula o caminho mais curto, adiciona uma lista de steps a fazer e faz todos esses steps até ao deposito mais perto
+
+    }
+
     /*-----------------------------
        Methods
     *---------------------------*/
-    public boolean isPause() {
-        return pause;
-    }
 
     public void setPause(boolean pause) {
         this.pause = pause;

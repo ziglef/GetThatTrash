@@ -9,17 +9,15 @@ public class Deposit implements Runnable {
     private GarbageCollector.typeOfWaste type;
     private Thread t;
     private int occupiedCapacity;
-    private boolean pause;
     private static final long SLEEP = 2000;
-    private static final int MAX_VALUE_WASTE_DEC = 25;
+    private static final int MAX_VALUE_WASTE_DEC = 2;
     private Random rn;
     private Position pos;
 
     public Deposit(String id, Position pos, GarbageCollector.typeOfWaste type) {
         this.id = id;
         this.type = type;
-        this.occupiedCapacity = 500;
-        this.pause = false;
+        this.occupiedCapacity = 0;
         this.pos = pos;
         this.rn = new Random();
         t = new Thread(this);
@@ -33,20 +31,20 @@ public class Deposit implements Runnable {
 
         int decrement;
 
-        while (!pause) {
+        while (true) {
 
             try {
                 t.sleep(SLEEP);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
-            decrement = rn.nextInt(MAX_VALUE_WASTE_DEC + 1);
-            if (occupiedCapacity < 0)
-                occupiedCapacity = 0;
-            else
-                occupiedCapacity -= decrement;
-            System.out.println("OccupiedCapacity:" + occupiedCapacity);
+            if(!GarbageCollector.getInstance().getPause()) {
+                decrement = rn.nextInt(MAX_VALUE_WASTE_DEC + 1);
+                if (occupiedCapacity < 0)
+                    occupiedCapacity = 0;
+                else
+                    occupiedCapacity -= decrement;
+            }
         }
     }
 

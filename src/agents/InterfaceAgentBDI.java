@@ -107,8 +107,6 @@ public class InterfaceAgentBDI {
     }
 
     public void updateCity(){
-
-            //UPDATEINTERFACE
         graphicInt.validate();
         graphicInt.repaint();
     }

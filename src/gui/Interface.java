@@ -30,19 +30,21 @@ public class Interface extends JFrame implements ActionListener{
     private JLabel agentCapacityLabel;
     private JLabel info;
     private IExternalAccess agent;
+    private boolean pause;
 
     public Interface(final IExternalAccess agent) throws FileNotFoundException{
         //super("Garbage Collection");
 
         memoryCB = new JCheckBox();
-        memoryCB.setSelected(true);
+        memoryCB.setSelected(false);
         memoryCB.setText("Memory");
 
         communicationCB = new JCheckBox();
-        communicationCB.setSelected(true);
+        communicationCB.setSelected(false);
         communicationCB.setText("Communication");
         createAndDisplayGUI(agent);
         graphInt = this;
+        pause = false;
     }
 
 
@@ -160,11 +162,6 @@ public class Interface extends JFrame implements ActionListener{
         });
     }
 
-    public boolean getPause(){
-
-       return false;
-    }
-
     @Override
     public void actionPerformed(ActionEvent e) {
 
@@ -179,6 +176,15 @@ public class Interface extends JFrame implements ActionListener{
             panel.add(city);
             validate();
             repaint();
+        }else if(clicked == pauseBTN){
+            if(pause) {
+                pause = false;
+                pauseBTN.setText("Pause");
+            }
+            else {
+                pauseBTN.setText("Unpause");
+                pause = true;
+            }
         }else if(clicked == exitBTN){
             int option = JOptionPane.showConfirmDialog(null, "Are you sure?", "Exit application", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
             if(option == JOptionPane.YES_OPTION)
@@ -216,5 +222,9 @@ public class Interface extends JFrame implements ActionListener{
 
     public GridCity getCity() {
         return city;
+    }
+
+    public boolean getPause() {
+        return pause;
     }
 }

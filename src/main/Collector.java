@@ -8,11 +8,10 @@ public class Collector implements Runnable{
 
     private Position pos;
     private GarbageCollector.typeOfWaste type;
-    private boolean pause;
     private int occupiedCapacity, capacity;
     private String id;
     private Thread t;
-    private static final long SLEEP = 4000;
+    private static final long SLEEP = 2500;
     private static final int MAX_VALUE_WASTE_INC = 10;
     private Random rn;
 
@@ -21,7 +20,6 @@ public class Collector implements Runnable{
         this.pos = pos;
         this.type = type;
         this.capacity = capacity;
-        this.pause = false;
         this.occupiedCapacity = 0;
         this.rn = new Random();
         this.t = new Thread(this);
@@ -34,7 +32,7 @@ public class Collector implements Runnable{
 
         int increment;
 
-        while(!pause) {
+        while(true) {
 
             try {
                 t.sleep(SLEEP);
@@ -42,13 +40,14 @@ public class Collector implements Runnable{
                 e.printStackTrace();
             }
 
-            increment = rn.nextInt(MAX_VALUE_WASTE_INC+1);
-            if(occupiedCapacity < capacity){
-                if(occupiedCapacity + increment > capacity)
-                    occupiedCapacity = capacity;
-                else
-                    occupiedCapacity+=increment;
-                System.out.println("Capacity:" + occupiedCapacity);
+            if(!GarbageCollector.getInstance().getPause()) {
+                increment = rn.nextInt(MAX_VALUE_WASTE_INC + 1);
+                if (occupiedCapacity < capacity) {
+                    if (occupiedCapacity + increment > capacity)
+                        occupiedCapacity = capacity;
+                    else
+                        occupiedCapacity += increment;
+                }
             }
         }
     }
@@ -67,5 +66,9 @@ public class Collector implements Runnable{
 
     public int getCapacity() {
         return capacity;
+    }
+
+    public void setOccupiedCapacity(int ocapacity) {
+        this.occupiedCapacity = ocapacity;
     }
 }

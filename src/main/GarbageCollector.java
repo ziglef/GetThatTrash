@@ -8,13 +8,13 @@ import jadex.bridge.IExternalAccess;
 import jadex.bridge.service.types.cms.CreationInfo;
 import jadex.bridge.service.types.cms.IComponentManagementService;
 import jadex.commons.future.ThreadSuspendable;
+import javafx.geometry.Pos;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 
-//TODO add things about deposits and collectors
 public class GarbageCollector {
 
     /*------------------------------
@@ -78,7 +78,6 @@ public class GarbageCollector {
             aux[i] = truck.getPosition();
             i++;
         }
-
         return aux;
     }
 
@@ -114,6 +113,27 @@ public class GarbageCollector {
         return null;
     }
 
+    public Collector getCollectorByPos(Position pos){
+        for(Collector collector : collectors){
+            if(collector.getPosition().equals(pos))
+                return collector;
+        }
+        return null;
+    }
+
+    public Collector checkCollectorPos(Position pos){
+        for(Collector collector : collectors){
+            if(collector.getPosition().equals(new Position(pos.x, pos.y-1)))
+                return collector;
+            if(collector.getPosition().equals(new Position(pos.x, pos.y+1)))
+                return collector;
+            if(collector.getPosition().equals(new Position(pos.x-1, pos.y)))
+                return collector;
+            if(collector.getPosition().equals(new Position(pos.x+1, pos.y)))
+                return collector;
+        }
+        return null;
+    }
 
     public void setInterface(Interface graphicInt){
         if(this.graphicInt == null)
@@ -133,9 +153,6 @@ public class GarbageCollector {
         return graphicInt != null && graphicInt.getPause();
     }
 
-    public void addTruckType(typeOfWaste type) {
-
-    }
 
     private boolean getMemory(){
         return memory;
@@ -161,7 +178,7 @@ public class GarbageCollector {
         collectors.add(collector);
     }
 
-    public static ArrayList<Deposit> getDeposits() {
+    public ArrayList<Deposit> getDeposits() {
         return deposits;
     }
 
@@ -169,6 +186,8 @@ public class GarbageCollector {
         deposits.add(deposit);
     }
 
-
+    public void setCollectorOcuppiedCapacity(Position pos, int capacity) {
+        getCollectorByPos(pos).setOccupiedCapacity(capacity);
+    }
 
 }

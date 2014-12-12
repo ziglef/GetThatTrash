@@ -65,6 +65,9 @@ public class GridCity extends JPanel {
     private Deposit deposit;
     private int fontSize;
 
+    //TODO Refactoring nisto tudo e veriricar se já existe um contentor ou um deposito na posicao clicada. Nao é necessário adicionar ao grafo a nao ser que queiramos que so seja possivel
+    //apanhar o lixo de um lado da estrada
+
     // Mouse listener for the images //
     private MouseListener listener = new MouseAdapter() {
         @Override
@@ -274,17 +277,25 @@ public class GridCity extends JPanel {
 
             GarbageCollector.typeOfWaste type = GarbageCollector.getInstance().getTruckAgents().get(i).getType();
 
-            if(type == GarbageCollector.typeOfWaste.GLASS)
+            if(type == GarbageCollector.typeOfWaste.GLASS) {
                 img = truckGlass.getImage();
+                g.setColor(new Color(22,128,62));
+            }
 
-            else if(type == GarbageCollector.typeOfWaste.PAPER)
+            else if(type == GarbageCollector.typeOfWaste.PAPER) {
                 img = truckPaper.getImage();
+                g.setColor(new Color(0,0,255));
+            }
 
-            else if(type == GarbageCollector.typeOfWaste.PLASTIC)
+            else if(type == GarbageCollector.typeOfWaste.PLASTIC) {
                 img = truckPlastic.getImage();
+                g.setColor(new Color(255, 255, 0));
+            }
 
-            else
+            else {
+                g.setColor(Color.black);
                 img = truckUndifferentiated.getImage();
+            }
 
 
             g.drawImage(img,
@@ -294,8 +305,6 @@ public class GridCity extends JPanel {
                         height,
                         null);
 
-
-            g.setColor(Color.black);
             g.drawString(GarbageCollector.getInstance().getTruckAgents().get(i).getOccupiedCapacity() +
                     "/"+GarbageCollector.getInstance().getTruckAgents().get(i).getCapacity(),
                    GarbageCollector.getInstance().getTrucksLoc()[i].y * width + width/20*7,
@@ -312,14 +321,23 @@ public class GridCity extends JPanel {
             GarbageCollector.typeOfWaste type = GarbageCollector.getInstance().getCollectors().get(i).getType();
 
 
-            if(type == GarbageCollector.typeOfWaste.GLASS)
+            if(type == GarbageCollector.typeOfWaste.GLASS){
+                g.setColor(new Color(22,128,62));
                 img = containerGlass.getImage();
-            else if(type == GarbageCollector.typeOfWaste.PAPER)
+            }
+            else if(type == GarbageCollector.typeOfWaste.PAPER) {
+                g.setColor(new Color(0,0,255));
                 img = containerPaper.getImage();
-            else if(type == GarbageCollector.typeOfWaste.PLASTIC)
+            }
+            else if(type == GarbageCollector.typeOfWaste.PLASTIC) {
+                g.setColor(new Color(255, 255, 0));
                 img = containerPlastic.getImage();
-            else
+            }
+            else {
+                g.setColor(new Color(0,0,0));
                 img = containerUndifferentiated.getImage();
+            }
+
 
             g.drawImage(img,
                     GarbageCollector.getInstance().getCollectorsLoc()[i].y * width,
@@ -328,8 +346,6 @@ public class GridCity extends JPanel {
                     height,
                     null);
 
-
-            g.setColor(Color.black);
             g.drawString(GarbageCollector.getInstance().getCollectors().get(i).getOccupiedCapacity() +
                             "/"+GarbageCollector.getInstance().getCollectors().get(i).getCapacity(),
                     GarbageCollector.getInstance().getCollectorsLoc()[i].y * width + width/20*7,
@@ -337,21 +353,28 @@ public class GridCity extends JPanel {
 
         }
 
-        //TODO draw depositos
         for (int i = 0; i < GarbageCollector.getInstance().getDeposits().size(); i++) {
 
             Image img;
 
             GarbageCollector.typeOfWaste type = GarbageCollector.getInstance().getDeposits().get(i).getType();
 
-            if(type == GarbageCollector.typeOfWaste.GLASS)
+            if(type == GarbageCollector.typeOfWaste.GLASS) {
+                g.setColor(new Color(22,128,62));
                 img = depositGlass.getImage();
-            else if(type == GarbageCollector.typeOfWaste.PAPER)
+            }
+            else if(type == GarbageCollector.typeOfWaste.PAPER) {
+                g.setColor(new Color(0,0,255));
                 img = depositPaper.getImage();
-            else if(type == GarbageCollector.typeOfWaste.PLASTIC)
+            }
+            else if(type == GarbageCollector.typeOfWaste.PLASTIC) {
+                g.setColor(new Color(255,255,0));
                 img = depositPlastic.getImage();
-            else
+            }
+            else {
+                g.setColor(new Color(0,0,0));
                 img = depositUndifferentiated.getImage();
+            }
 
             g.drawImage(img,
                     GarbageCollector.getInstance().getDepositsLoc()[i].y * width,
@@ -360,7 +383,7 @@ public class GridCity extends JPanel {
                     height,
                     null);
 
-            g.setColor(Color.black);
+
             g.drawString(GarbageCollector.getInstance().getDeposits().get(i).getOccupiedCapacity()+"",
                     GarbageCollector.getInstance().getDepositsLoc()[i].y * width + width/16*7,
                     GarbageCollector.getInstance().getDepositsLoc()[i].x * height + height/28*7);
@@ -368,7 +391,7 @@ public class GridCity extends JPanel {
     }
 
     private void cleanCity(Graphics g) {
-        g.setColor(new Color(139, 181, 74));
+        g.setColor(new Color(138, 181, 74));
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
     }
 
