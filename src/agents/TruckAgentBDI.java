@@ -218,8 +218,26 @@ public class TruckAgentBDI {
         }
 
         return path;
-
     }
+	
+	public ArrayList<Position> getShortestPath(ArrayList<Position> dest){
+	
+		ArrayList<ArrayList<Position>> paths = new ArrayList<>();
+		int min = Integer.MAX_VALUE;
+		int minIndex = 0;
+		int i = 0;
+	
+		for( Position p : dest ){
+			paths.add( this.getShortestPath( p ) );
+			if( paths.get(paths.size()-1).size() < min ){
+				min = paths.get(paths.size()-1).size();
+				minIndex = i;
+			}
+			i++;
+		}
+		
+		return paths.get(minIndex);
+	}
 
     public String getName() {
         return name;
