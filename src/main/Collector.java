@@ -1,10 +1,8 @@
 package main;
 
-
 import java.util.Random;
 
 public class Collector implements Runnable{
-
 
     private Position pos;
     private GarbageCollector.typeOfWaste type;

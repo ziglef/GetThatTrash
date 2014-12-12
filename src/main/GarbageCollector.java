@@ -8,7 +8,6 @@ import jadex.bridge.IExternalAccess;
 import jadex.bridge.service.types.cms.CreationInfo;
 import jadex.bridge.service.types.cms.IComponentManagementService;
 import jadex.commons.future.ThreadSuspendable;
-import javafx.geometry.Pos;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -135,6 +134,28 @@ public class GarbageCollector {
         return null;
     }
 
+    public Deposit getDepositByPos(Position pos){
+        for(Deposit deposit : deposits){
+            if(deposit.getPosition().equals(pos))
+                return deposit;
+        }
+        return null;
+    }
+
+    public Deposit checkDepositPos(Position pos){
+        for(Deposit deposit : deposits){
+            if(deposit.getPosition().equals(new Position(pos.x, pos.y-1)))
+                return deposit;
+            if(deposit.getPosition().equals(new Position(pos.x, pos.y+1)))
+                return deposit;
+            if(deposit.getPosition().equals(new Position(pos.x-1, pos.y)))
+                return deposit;
+            if(deposit.getPosition().equals(new Position(pos.x+1, pos.y)))
+                return deposit;
+        }
+        return null;
+    }
+
     public void setInterface(Interface graphicInt){
         if(this.graphicInt == null)
             this.graphicInt = graphicInt;
@@ -187,6 +208,10 @@ public class GarbageCollector {
     }
 
     public void setCollectorOcuppiedCapacity(Position pos, int capacity) {
+        getCollectorByPos(pos).setOccupiedCapacity(capacity);
+    }
+
+    public void setDepositOcuppiedCapacity(Position pos, int capacity) {
         getCollectorByPos(pos).setOccupiedCapacity(capacity);
     }
 

@@ -1,8 +1,8 @@
 package agents;
 
 import gui.GridCity;
-import jadex.bridge.service.types.cms.IComponentManagementService;
 import main.Collector;
+import main.Deposit;
 import map.Vertex;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.alg.DijkstraShortestPath;
@@ -14,7 +14,6 @@ import main.Position;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 
 @Agent
@@ -101,7 +100,7 @@ public class TruckAgentBDI {
     @AgentBody
     public void body() {
         agent.dispatchTopLevelGoal(new CheckContainer());
-        agent.dispatchTopLevelGoal(new WanderAroundCity()).get();
+        agent.dispatchTopLevelGoal(new WanderAroundCity());
         agent.dispatchTopLevelGoal(new GoToDeposit());
     }
 
@@ -196,20 +195,20 @@ public class TruckAgentBDI {
 
             System.out.println("Passei por um contentor do meu tipo e vou apanhar o lixo");
             if(collector.getType() == type){
-                try {
-                    Thread.sleep(SLEEP);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
                 if(occupiedCapacity < capacity) {
                     if (occupiedCapacity + collector.getOccupiedCapacity() > capacity) {
                         remainderCapacity = occupiedCapacity + collector.getOccupiedCapacity() - capacity;
                         occupiedCapacity = capacity;
-                        GarbageCollector.getInstance().setCollectorOcuppiedCapacity(collector.getPosition(), remainderCapacity);
+                        collector.setOccupiedCapacity(remainderCapacity);
                     } else {
                         occupiedCapacity += collector.getOccupiedCapacity();
-                        GarbageCollector.getInstance().setCollectorOcuppiedCapacity(collector.getPosition(), 0);
+                        collector.setOccupiedCapacity(0);
+                    }
+
+                    try {
+                        Thread.sleep(SLEEP);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
             }
@@ -229,6 +228,22 @@ public class TruckAgentBDI {
 
 
         //TODO se tiver memory = true, calcula o caminho mais curto, adiciona uma lista de steps a fazer e faz todos esses steps até ao deposito mais perto
+        Deposit deposit = GarbageCollector.getInstance().checkDepositPos(pos);
+        if(deposit != null) {
+
+            System.out.println("Passei por um deposito do meu tipo e vou depositar o lixo");
+            if(deposit.getType() == type){
+
+                    deposit.setOccupiedCapacity(deposit.getOccupiedCapacity() + occupiedCapacity);
+                    occupiedCapacity = 0;
+
+                    try {
+                        Thread.sleep(SLEEP);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+            }
+        }
 
     }
 

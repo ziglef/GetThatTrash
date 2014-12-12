@@ -1,6 +1,5 @@
 package main;
 
-
 import java.util.Random;
 
 public class Deposit implements Runnable {
@@ -25,7 +24,6 @@ public class Deposit implements Runnable {
         GarbageCollector.getInstance().addDeposit(this);
     }
 
-
     @Override
     public void run() {
 
@@ -40,7 +38,7 @@ public class Deposit implements Runnable {
             }
             if(!GarbageCollector.getInstance().getPause()) {
                 decrement = rn.nextInt(MAX_VALUE_WASTE_DEC + 1);
-                if (occupiedCapacity < 0)
+                if (occupiedCapacity <= decrement)
                     occupiedCapacity = 0;
                 else
                     occupiedCapacity -= decrement;
@@ -58,6 +56,10 @@ public class Deposit implements Runnable {
 
     public int getOccupiedCapacity() {
         return occupiedCapacity;
+    }
+
+    public void setOccupiedCapacity(int ocapacity) {
+        this.occupiedCapacity = ocapacity;
     }
 
 }
