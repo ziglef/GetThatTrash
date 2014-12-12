@@ -12,6 +12,7 @@ import jadex.commons.future.ThreadSuspendable;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class GarbageCollector {
@@ -27,7 +28,7 @@ public class GarbageCollector {
     private IExternalAccess ia;
     private IComponentManagementService icms;
     private static GarbageCollector instance;
-    public boolean memory = true, communication = true;
+    public boolean memory = false, communication = false;
 
     public static enum typeOfWaste {
         PAPER, PLASTIC, GLASS, UNDIFFERENTIATED
@@ -120,18 +121,36 @@ public class GarbageCollector {
         return null;
     }
 
-    public Collector checkCollectorPos(Position pos){
+    public ArrayList<Collector> checkAdjacentCollectorPos(Position pos){
+
+        ArrayList<Collector> aux = new ArrayList<>();
         for(Collector collector : collectors){
             if(collector.getPosition().equals(new Position(pos.x, pos.y-1)))
-                return collector;
+               aux.add(collector);
             if(collector.getPosition().equals(new Position(pos.x, pos.y+1)))
-                return collector;
+                aux.add(collector);
             if(collector.getPosition().equals(new Position(pos.x-1, pos.y)))
-                return collector;
+                aux.add(collector);
             if(collector.getPosition().equals(new Position(pos.x+1, pos.y)))
-                return collector;
+                aux.add(collector);
         }
-        return null;
+        return aux;
+    }
+
+    public ArrayList<Deposit> checkAdjacentDEpositPos(Position pos){
+
+        ArrayList<Deposit> aux = new ArrayList<>();
+        for(Deposit deposit : deposits){
+            if(deposit.getPosition().equals(new Position(pos.x, pos.y-1)))
+                aux.add(deposit);
+            if(deposit.getPosition().equals(new Position(pos.x, pos.y+1)))
+                aux.add(deposit);
+            if(deposit.getPosition().equals(new Position(pos.x-1, pos.y)))
+                aux.add(deposit);
+            if(deposit.getPosition().equals(new Position(pos.x+1, pos.y)))
+                aux.add(deposit);
+        }
+        return aux;
     }
 
     public Deposit getDepositByPos(Position pos){
@@ -175,11 +194,12 @@ public class GarbageCollector {
     }
 
 
-    private boolean getMemory(){
+    public boolean getMemory(){
         return memory;
     }
 
-    private void setMemory(boolean memory){
+
+    public void setMemory(boolean memory){
         this.memory = memory;
     }
 

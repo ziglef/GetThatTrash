@@ -77,7 +77,7 @@ public class InterfaceAgentBDI {
         @GoalResult
         protected int r;
 
-        @GoalContextCondition(rawevents = @jadex.bdiv3.annotation.RawEvent(value = "pause"))
+        @GoalRecurCondition(beliefs="pause")
         public boolean checkContext() {
             return !pause;
         }

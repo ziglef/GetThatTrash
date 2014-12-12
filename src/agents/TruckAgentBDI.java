@@ -1,6 +1,7 @@
 package agents;
 
 import gui.GridCity;
+import javafx.geometry.Pos;
 import main.Collector;
 import main.Deposit;
 import map.Vertex;
@@ -39,13 +40,8 @@ public class TruckAgentBDI {
     @Belief
     int capacity;
 
-    @Belief
     GarbageCollector.typeOfWaste type = GarbageCollector.typeOfWaste.UNDIFFERENTIATED;
-
-    @Belief
     Position pos;
-
-    @Belief
     int occupiedCapacity;
 
     @Belief
@@ -70,6 +66,8 @@ public class TruckAgentBDI {
     public static final String AGENT_PATH = "out\\production\\AIAD\\agents\\TruckAgentBDI.class";
     private GridCity gc;
     private int remainderCapacity = 0;
+    private static ArrayList<Position> collectorsInMemory;
+    private static ArrayList<Position> depositsInMemory;
 
 
     /*------------------------------
@@ -94,7 +92,8 @@ public class TruckAgentBDI {
         memory = GarbageCollector.getInstance().memory;
         mission = false;
         gc = GarbageCollector.getInstance().getInterface().getCity();
-
+        collectorsInMemory = new ArrayList<>();
+        depositsInMemory = new ArrayList<>();
     }
 
     @AgentBody
@@ -118,7 +117,7 @@ public class TruckAgentBDI {
         @GoalResult
         protected int r;
 
-        @GoalContextCondition(rawevents = @jadex.bdiv3.annotation.RawEvent(value="pause"))
+        @GoalRecurCondition(beliefs="pause")
         public boolean checkContext() {
             return !pause;
         }
@@ -131,7 +130,7 @@ public class TruckAgentBDI {
         @GoalResult
         protected int r;
 
-        @GoalContextCondition(rawevents = @jadex.bdiv3.annotation.RawEvent(value="pause"))
+        @GoalRecurCondition(beliefs="pause")
         public boolean checkContext() {
             return !pause;
         }
@@ -144,7 +143,7 @@ public class TruckAgentBDI {
         @GoalResult
         protected int r;
 
-        @GoalContextCondition(rawevents = @jadex.bdiv3.annotation.RawEvent(value="pause"))
+        @GoalRecurCondition(beliefs="pause")
         public boolean checkContext() {
             return !pause;
         }
@@ -163,7 +162,7 @@ public class TruckAgentBDI {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }while(GarbageCollector.getInstance().getPause());
+        }while(pause = GarbageCollector.getInstance().getPause());
 
         updatePos();
         gc.validate();
@@ -185,30 +184,34 @@ public class TruckAgentBDI {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }while(GarbageCollector.getInstance().getPause());
+        }while(pause = GarbageCollector.getInstance().getPause());
 
+        ArrayList<Collector> adjacentsCollectors = GarbageCollector.getInstance().checkAdjacentCollectorPos(pos);
 
-        //TODO verificar se um contentor está adjacentes à POS atual
-        // se tiver um contentor adjacente, verificar o seu tipo, apanhar o lixo e se exceder a minha capacidade, deixar lá o resto
-        Collector collector = GarbageCollector.getInstance().checkCollectorPos(pos);
-        if(collector != null) {
+        if(adjacentsCollectors.size() > 0){
+            for(int i = 0 ; i < adjacentsCollectors.size(); i++){
 
-            System.out.println("Passei por um contentor do meu tipo e vou apanhar o lixo");
-            if(collector.getType() == type){
-                if(occupiedCapacity < capacity) {
-                    if (occupiedCapacity + collector.getOccupiedCapacity() > capacity) {
-                        remainderCapacity = occupiedCapacity + collector.getOccupiedCapacity() - capacity;
-                        occupiedCapacity = capacity;
-                        collector.setOccupiedCapacity(remainderCapacity);
-                    } else {
-                        occupiedCapacity += collector.getOccupiedCapacity();
-                        collector.setOccupiedCapacity(0);
+                if(adjacentsCollectors.get(i).getType() == type) {
+                    if (!collectorsInMemory.contains(adjacentsCollectors.get(i).getPosition()) && GarbageCollector.getInstance().getMemory()) {
+                        collectorsInMemory.add(adjacentsCollectors.get(i).getPosition());
+                        System.out.println("Adicionei a lista dos collectors que conheco o collector na posicao " + adjacentsCollectors.get(i).getPosition().x + "-" + adjacentsCollectors.get(i).getPosition().y);
                     }
 
-                    try {
-                        Thread.sleep(SLEEP);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                    if (occupiedCapacity < capacity) {
+                        if (occupiedCapacity + adjacentsCollectors.get(i).getOccupiedCapacity() > capacity) {
+                            remainderCapacity = occupiedCapacity + adjacentsCollectors.get(i).getOccupiedCapacity() - capacity;
+                            occupiedCapacity = capacity;
+                            adjacentsCollectors.get(i).setOccupiedCapacity(remainderCapacity);
+                            i = adjacentsCollectors.size();
+                        } else {
+                            occupiedCapacity += adjacentsCollectors.get(i).getOccupiedCapacity();
+                            adjacentsCollectors.get(i).setOccupiedCapacity(0);
+                        }
+                        try {
+                            Thread.sleep(SLEEP);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
@@ -227,14 +230,15 @@ public class TruckAgentBDI {
         }while(GarbageCollector.getInstance().getPause());
 
 
-        //TODO se tiver memory = true, calcula o caminho mais curto, adiciona uma lista de steps a fazer e faz todos esses steps até ao deposito mais perto
-        Deposit deposit = GarbageCollector.getInstance().checkDepositPos(pos);
-        if(deposit != null) {
+        ArrayList<Deposit> adjacentDeposits = GarbageCollector.getInstance().checkAdjacentDEpositPos(pos);
 
-            System.out.println("Passei por um deposito do meu tipo e vou depositar o lixo");
-            if(deposit.getType() == type){
 
-                    deposit.setOccupiedCapacity(deposit.getOccupiedCapacity() + occupiedCapacity);
+        if(adjacentDeposits.size() > 0) {
+
+            for(int i = 0 ; i < adjacentDeposits.size(); i++) {
+
+                if (adjacentDeposits.get(i).getType() == type && occupiedCapacity != 0) {
+                    adjacentDeposits.get(i).setOccupiedCapacity(adjacentDeposits.get(i).getOccupiedCapacity() + occupiedCapacity);
                     occupiedCapacity = 0;
 
                     try {
@@ -242,6 +246,12 @@ public class TruckAgentBDI {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                }
+
+                if (!depositsInMemory.contains(adjacentDeposits.get(i).getPosition()) && GarbageCollector.getInstance().getMemory()) {
+                    depositsInMemory.add(adjacentDeposits.get(i).getPosition());
+                    System.out.println("Adicionei a lista dos depositos que conheco o deposito na posicao " + adjacentDeposits.get(i).getPosition().x + "-" + adjacentDeposits.get(i).getPosition().y);
+                }
             }
         }
 

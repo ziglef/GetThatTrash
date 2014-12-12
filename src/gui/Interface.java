@@ -1,17 +1,16 @@
 package gui;
 
 import jadex.bridge.IExternalAccess;
+import main.GarbageCollector;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.io.FileNotFoundException;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 
-public class Interface extends JFrame implements ActionListener{
+public class Interface extends JFrame implements ActionListener, ItemListener{
 
 	private static final long serialVersionUID = 1L;
 	private static int gridSize = 10;
@@ -38,10 +37,12 @@ public class Interface extends JFrame implements ActionListener{
         memoryCB = new JCheckBox();
         memoryCB.setSelected(false);
         memoryCB.setText("Memory");
+        memoryCB.addItemListener(this);
 
         communicationCB = new JCheckBox();
         communicationCB.setSelected(false);
         communicationCB.setText("Communication");
+        communicationCB.addItemListener(this);
         createAndDisplayGUI(agent);
         graphInt = this;
         pause = false;
@@ -192,6 +193,19 @@ public class Interface extends JFrame implements ActionListener{
         }
     }
 
+    @Override
+    public void itemStateChanged(ItemEvent e) {
+
+        JCheckBox checkbox = (JCheckBox) e.getItemSelectable();
+
+        if(checkbox == memoryCB)
+            GarbageCollector.getInstance().setMemory(checkbox.isSelected());
+
+        if(checkbox == communicationCB)
+            System.out.println("Cliquei na checkbox da comunicacao");
+
+    }
+
     public JTextField getAgentName() {
         return agentName;
     }
@@ -227,4 +241,6 @@ public class Interface extends JFrame implements ActionListener{
     public boolean getPause() {
         return pause;
     }
+
+
 }
