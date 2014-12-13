@@ -173,6 +173,7 @@ public class Interface extends JFrame implements ActionListener, ItemListener{
             dialog.setVisible(true);
             Container panel = getContentPane();
             panel.remove(city);
+            GarbageCollector.getInstance().restartCity();
             city = new GridCity("resources/graphs/"+dialog.getCity(), this.agent);
             panel.add(city);
             validate();

@@ -22,6 +22,7 @@ public class GarbageCollector {
     *-----------------------------*/
     private Interface graphicInt;
     private static ArrayList<TruckAgentBDI> truckAgents;
+    private static ArrayList<IExternalAccess> truckAgentsExtService;
     private static ArrayList<Collector> collectors;
     private static ArrayList<Deposit> deposits;
     private ThreadSuspendable t;
@@ -41,6 +42,7 @@ public class GarbageCollector {
         truckAgents = new ArrayList<>();
         collectors = new ArrayList<>();
         deposits = new ArrayList<>();
+        truckAgentsExtService = new ArrayList<>();
     }
 
     /*------------------------------
@@ -233,6 +235,22 @@ public class GarbageCollector {
 
     public void setDepositOcuppiedCapacity(Position pos, int capacity) {
         getCollectorByPos(pos).setOccupiedCapacity(capacity);
+    }
+
+    public void addExternalAccess(final IExternalAccess externalAccess) {
+        truckAgentsExtService.add(externalAccess);
+    }
+
+    public void restartCity(){
+
+        for(IExternalAccess agentIEA : truckAgentsExtService)
+            agentIEA.killComponent();
+
+        truckAgents.clear();
+        deposits.clear();
+        collectors.clear();
+        truckAgentsExtService.clear();
+
     }
 
 }

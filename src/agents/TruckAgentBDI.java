@@ -13,6 +13,7 @@ import jadex.micro.annotation.*;
 import main.GarbageCollector;
 import main.Position;
 
+import java.nio.channels.GatheringByteChannel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,6 +89,7 @@ public class TruckAgentBDI {
         steps = new ArrayList<>();
         occupiedCapacity = 0;
         pause = GarbageCollector.getInstance().getPause();
+        GarbageCollector.getInstance().addExternalAccess(agent.getExternalAccess());
         GarbageCollector.getInstance().addTruckAgent(this);
         memory = GarbageCollector.getInstance().memory;
         mission = false;
@@ -113,6 +115,7 @@ public class TruckAgentBDI {
      *---------------------------*/
     @Goal(excludemode = Goal.ExcludeMode.Never, retry = true, orsuccess = false)
     public class WanderAroundCity {
+
 
         @GoalResult
         protected int r;
