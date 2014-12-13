@@ -99,8 +99,8 @@ public class TruckAgentBDI {
     @AgentBody
     public void body() {
         agent.dispatchTopLevelGoal(new CheckContainer());
-        agent.dispatchTopLevelGoal(new WanderAroundCity());
         agent.dispatchTopLevelGoal(new GoToDeposit());
+        agent.dispatchTopLevelGoal(new WanderAroundCity());
     }
 
     @AgentKilled
@@ -164,6 +164,12 @@ public class TruckAgentBDI {
                 e.printStackTrace();
             }
         }while(pause = GarbageCollector.getInstance().getPause());
+
+        try {
+            Thread.sleep(SLEEP);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         updatePos();
         gc.validate();
@@ -232,6 +238,15 @@ public class TruckAgentBDI {
 
         ArrayList<Deposit> adjacentDeposits = GarbageCollector.getInstance().checkAdjacentDEpositPos(pos);
 
+        System.out.println("OccupiedCapacity: " + occupiedCapacity);
+        System.out.println("Capacity: " + capacity);
+        System.out.println("depositsInMemory.size(): " + depositsInMemory.size());
+        if(occupiedCapacity == capacity && depositsInMemory.size() > 0) {
+            System.out.println("Entrei para calcular o caminho mais curto");
+            steps = getShortestPath(depositsInMemory);
+            System.out.println("ja tenho o caminho mais curto");
+        }
+
 
         if(adjacentDeposits.size() > 0) {
 
@@ -253,9 +268,6 @@ public class TruckAgentBDI {
                     System.out.println("Adicionei a lista dos depositos que conheco o deposito na posicao " + adjacentDeposits.get(i).getPosition().x + "-" + adjacentDeposits.get(i).getPosition().y);
                 }
             }
-
-            steps = getShortestPath(depositsInMemory);
-            System.out.println("Calculei o caminho mais curto");
         }
 
     }
@@ -270,12 +282,13 @@ public class TruckAgentBDI {
 
     public void updatePos() {
 
-       // System.out.println("Steps size : " + steps.size());
+        System.out.println("Steps size : " + steps.size());
+
 
         // have a trip to do
        if (steps.size() > 0) {
             pos = steps.remove(steps.size() - 1);
-           System.out.println("Tou a fazer um passo presente em STEPS");
+            System.out.println("Tou a fazer um passo presente em STEPS");
         } else {
             pos = autoMove();
         }

@@ -19,7 +19,7 @@ public class Collector implements Runnable{
         this.pos = pos;
         this.type = type;
         this.capacity = capacity;
-        this.occupiedCapacity = 0;
+        this.occupiedCapacity = 100;
         this.rn = new Random();
         this.t = new Thread(this);
         this.t.start();
