@@ -306,8 +306,16 @@ public class TruckAgentBDI {
     }
 
     public boolean isRoad(Position pos) {
+<<<<<<< HEAD
         System.out.println("Tou aqui");
         return gc.getCtB().getVertexByCoords(pos.x, pos.y).getName().charAt(0) == 'v';
+=======
+        Vertex v = gc.getCtB().getVertexByCoords(pos.x, pos.y);
+        if( v != null )
+            return v.getName().charAt(0) == 'v';
+        else
+            return false;
+>>>>>>> c113eea074d5a0520dccfb80b5c1e07979603914
     }
 
     public boolean isConnected(Position orig, Position dest) {
@@ -330,11 +338,21 @@ public class TruckAgentBDI {
         System.out.println("3 - \n" + dest.toString());
         ArrayList<Position> path = new ArrayList<>();
 
+        System.out.println("creating neighbors");
         ArrayList<Position> neighbors = new ArrayList<>();
-        if( isRoad(new Position(dest.x, dest.y - 1)) ) neighbors.add(new Position(dest.x, dest.y - 1));
-        if( isRoad(new Position(dest.x + 1, dest.y)) ) neighbors.add(new Position(dest.x + 1, dest.y));
-        if( isRoad(new Position(dest.x, dest.y + 1)) ) neighbors.add(new Position(dest.x, dest.y + 1));
-        if( isRoad(new Position(dest.x - 1, dest.y)) ) neighbors.add(new Position(dest.x - 1, dest.y));
+
+        System.out.println("checking road 1");
+        if( isRoad(new Position(dest.x, dest.y - 1)) )
+            neighbors.add(new Position(dest.x, dest.y - 1));
+        System.out.println("checking road 2");
+        if( isRoad(new Position(dest.x + 1, dest.y)) )
+            neighbors.add(new Position(dest.x + 1, dest.y));
+        System.out.println("checking road 3");
+        if( isRoad(new Position(dest.x, dest.y + 1)) )
+            neighbors.add(new Position(dest.x, dest.y + 1));
+        System.out.println("checking road 4");
+        if( isRoad(new Position(dest.x - 1, dest.y)) )
+            neighbors.add(new Position(dest.x - 1, dest.y));
 
         System.out.println("4");
         int min = Integer.MAX_VALUE;
