@@ -313,16 +313,16 @@ public class TruckAgentBDI {
     }
 
     public ArrayList<Position> getShortestPath(Position dest){
-        //if( !isRoad(dest) ) return null;
-
+        System.out.println("3 - \n" + dest.toString());
         ArrayList<Position> path = new ArrayList<>();
 
         ArrayList<Position> neighbors = new ArrayList<>();
-        if( isConnected(dest, new Position(dest.x, dest.y - 1)) ) neighbors.add(new Position(dest.x, dest.y - 1));
-        if( isConnected(dest, new Position(dest.x + 1, dest.y)) ) neighbors.add(new Position(dest.x + 1, dest.y));
-        if( isConnected(dest, new Position(dest.x, dest.y + 1)) ) neighbors.add(new Position(dest.x, dest.y + 1));
-        if( isConnected(dest, new Position(dest.x - 1, dest.y)) ) neighbors.add(new Position(dest.x - 1, dest.y));
+        if( isRoad(new Position(dest.x, dest.y - 1)) ) neighbors.add(new Position(dest.x, dest.y - 1));
+        if( isRoad(new Position(dest.x + 1, dest.y)) ) neighbors.add(new Position(dest.x + 1, dest.y));
+        if( isRoad(new Position(dest.x, dest.y + 1)) ) neighbors.add(new Position(dest.x, dest.y + 1));
+        if( isRoad(new Position(dest.x - 1, dest.y)) ) neighbors.add(new Position(dest.x - 1, dest.y));
 
+        System.out.println("4");
         int min = Integer.MAX_VALUE;
         int minIndex = 0;
         int i = 0;
@@ -342,30 +342,27 @@ public class TruckAgentBDI {
 
         return path;
     }
-	
-	public ArrayList<Position> getShortestPath(ArrayList<Position> dest){
 
+    public ArrayList<Position> getShortestPath(ArrayList<Position> dest){
 
+        System.out.println("1");
         ArrayList<ArrayList<Position>> paths = new ArrayList<>();
-		int min = Integer.MAX_VALUE;
-		int minIndex = 0;
-		int i = 0;
-        System.out.println("Entrei aqui 1");
+        int min = Integer.MAX_VALUE;
+        int minIndex = 0;
+        int i = 0;
 
-		for( Position p : dest ){
-			paths.add( this.getShortestPath(p) );
-            System.out.println("Entrei aqui 2");
-			if( paths.get(paths.size()-1).size() < min ){
-				min = paths.get(paths.size()-1).size();
-				minIndex = i;
-			}
-			i++;
+        System.out.println("2");
+        for( Position p : dest ){
+            paths.add( this.getShortestPath( p ) );
+            if( paths.get(paths.size()-1).size() < min ){
+                min = paths.get(paths.size()-1).size();
+                minIndex = i;
+            }
+            i++;
+        }
 
-            System.out.println("Entrei aqui 3");
-		}
-		
-		return paths.get(minIndex);
-	}
+        return paths.get(minIndex);
+    }
 
     public String getName() {
         return name;
