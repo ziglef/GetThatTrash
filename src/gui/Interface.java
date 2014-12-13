@@ -64,7 +64,7 @@ public class Interface extends JFrame implements ActionListener, ItemListener{
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(gridSize, gridSize, 0,0));
 
-        city = new GridCity("resources/graphs/City5", agent);
+        city = new GridCity("resources/graphs/City2", agent);
         contentPane.add(city, BorderLayout.CENTER);
 
         optPane2 = new JPanel();
@@ -171,13 +171,15 @@ public class Interface extends JFrame implements ActionListener, ItemListener{
         if(clicked == newBTN){
             ChooseCityGUI dialog = new ChooseCityGUI();
             dialog.setVisible(true);
-            Container panel = getContentPane();
-            panel.remove(city);
-            GarbageCollector.getInstance().restartCity();
-            city = new GridCity("resources/graphs/"+dialog.getCity(), this.agent);
-            panel.add(city);
-            validate();
-            repaint();
+            if(!dialog.getCity().equals("None")) {
+                Container panel = getContentPane();
+                panel.remove(city);
+                GarbageCollector.getInstance().restartCity();
+                city = new GridCity("resources/graphs/" + dialog.getCity(), this.agent);
+                panel.add(city);
+                validate();
+                repaint();
+            }
         }else if(clicked == pauseBTN){
             if(pause) {
                 pause = false;

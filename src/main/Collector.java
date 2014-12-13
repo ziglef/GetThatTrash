@@ -13,6 +13,7 @@ public class Collector implements Runnable{
     private static final int MAX_VALUE_WASTE_INC = 10;
     private Random rn;
 
+
     public Collector(String id, Position pos, GarbageCollector.typeOfWaste type, int capacity){
         this.id = id;
         this.pos = pos;

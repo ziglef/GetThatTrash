@@ -63,7 +63,7 @@ public class TruckAgentBDI {
     @Belief
     public static final long SLEEP = 300;
 
-    private List<Position> steps;
+    private ArrayList<Position> steps;
     public static final String AGENT_PATH = "out\\production\\AIAD\\agents\\TruckAgentBDI.class";
     private GridCity gc;
     private int remainderCapacity = 0;
@@ -83,8 +83,6 @@ public class TruckAgentBDI {
         pos = new Position(0,0);
         pos.x = (Integer) agent.getArgument("PositionX");
         pos.y = (Integer) agent.getArgument("PositionY");
-        /*if(pos == null)
-            pos = uma posicao que seja estrada; mas nunca será null, só para caso haja algum erro*/
         capacity = (Integer) agent.getArgument("Capacity");
         steps = new ArrayList<>();
         occupiedCapacity = 0;
@@ -232,7 +230,6 @@ public class TruckAgentBDI {
             }
         }while(GarbageCollector.getInstance().getPause());
 
-
         ArrayList<Deposit> adjacentDeposits = GarbageCollector.getInstance().checkAdjacentDEpositPos(pos);
 
 
@@ -256,6 +253,9 @@ public class TruckAgentBDI {
                     System.out.println("Adicionei a lista dos depositos que conheco o deposito na posicao " + adjacentDeposits.get(i).getPosition().x + "-" + adjacentDeposits.get(i).getPosition().y);
                 }
             }
+
+            steps = getShortestPath(depositsInMemory);
+            System.out.println("Calculei o caminho mais curto");
         }
 
     }
@@ -270,18 +270,15 @@ public class TruckAgentBDI {
 
     public void updatePos() {
 
-        pos = autoMove();
+       // System.out.println("Steps size : " + steps.size());
 
         // have a trip to do
-       /* if (steps.size() > 0) {
-            System.out.println("steps.size() > 0");
-        } else if (steps != null) {
-            //Set the current position to the last position on the list of steps
+       if (steps.size() > 0) {
             pos = steps.remove(steps.size() - 1);
-            System.out.println("steps != null");
+           System.out.println("Tou a fazer um passo presente em STEPS");
         } else {
             pos = autoMove();
-        }*/
+        }
 
     }
 
@@ -316,7 +313,7 @@ public class TruckAgentBDI {
     }
 
     public ArrayList<Position> getShortestPath(Position dest){
-        if( !isRoad(dest) ) return null;
+        //if( !isRoad(dest) ) return null;
 
         ArrayList<Position> path = new ArrayList<>();
 
@@ -347,19 +344,24 @@ public class TruckAgentBDI {
     }
 	
 	public ArrayList<Position> getShortestPath(ArrayList<Position> dest){
-	
-		ArrayList<ArrayList<Position>> paths = new ArrayList<>();
+
+
+        ArrayList<ArrayList<Position>> paths = new ArrayList<>();
 		int min = Integer.MAX_VALUE;
 		int minIndex = 0;
 		int i = 0;
-	
+        System.out.println("Entrei aqui 1");
+
 		for( Position p : dest ){
-			paths.add( this.getShortestPath( p ) );
+			paths.add( this.getShortestPath(p) );
+            System.out.println("Entrei aqui 2");
 			if( paths.get(paths.size()-1).size() < min ){
 				min = paths.get(paths.size()-1).size();
 				minIndex = i;
 			}
 			i++;
+
+            System.out.println("Entrei aqui 3");
 		}
 		
 		return paths.get(minIndex);
