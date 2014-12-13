@@ -306,6 +306,7 @@ public class TruckAgentBDI {
     }
 
     public boolean isRoad(Position pos) {
+        System.out.println("Tou aqui");
         return gc.getCtB().getVertexByCoords(pos.x, pos.y).getName().charAt(0) == 'v';
     }
 
