@@ -9,7 +9,7 @@ public class Deposit implements Runnable {
     private Thread t;
     private int occupiedCapacity;
     private static final long SLEEP = 2000;
-    private static final int MAX_VALUE_WASTE_DEC = 2;
+    private static final int MAX_VALUE_WASTE_DEC = 50;
     private Random rn;
     private Position pos;
 
@@ -32,7 +32,7 @@ public class Deposit implements Runnable {
         while (true) {
 
             try {
-                t.sleep(SLEEP);
+                t.sleep(SLEEP / GarbageCollector.getInstance().getVelocity());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

@@ -2,7 +2,7 @@ package main;
 
 import java.util.Random;
 
-public class Collector implements Runnable{
+public class Container implements Runnable{
 
     private Position pos;
     private GarbageCollector.typeOfWaste type;
@@ -10,20 +10,20 @@ public class Collector implements Runnable{
     private String id;
     private Thread t;
     private static final long SLEEP = 2500;
-    private static final int MAX_VALUE_WASTE_INC = 10;
+    private static final int MAX_VALUE_WASTE_INC = 15;
     private Random rn;
 
 
-    public Collector(String id, Position pos, GarbageCollector.typeOfWaste type, int capacity){
+    public Container(String id, Position pos, GarbageCollector.typeOfWaste type, int capacity){
         this.id = id;
         this.pos = pos;
         this.type = type;
         this.capacity = capacity;
-        this.occupiedCapacity = 100;
+        this.occupiedCapacity = 0;
         this.rn = new Random();
         this.t = new Thread(this);
         this.t.start();
-        GarbageCollector.getInstance().addCollector(this);
+        GarbageCollector.getInstance().addContainers(this);
     }
 
     @Override
@@ -34,7 +34,7 @@ public class Collector implements Runnable{
         while(true) {
 
             try {
-                t.sleep(SLEEP);
+                t.sleep(SLEEP / GarbageCollector.getInstance().getVelocity());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

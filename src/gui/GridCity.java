@@ -12,7 +12,7 @@ import jadex.bridge.service.search.SServiceProvider;
 import jadex.bridge.service.types.cms.CreationInfo;
 import jadex.bridge.service.types.cms.IComponentManagementService;
 import jadex.commons.future.ThreadSuspendable;
-import main.Collector;
+import main.Container;
 import main.Deposit;
 import main.GarbageCollector;
 import main.Position;
@@ -61,7 +61,7 @@ public class GridCity extends JPanel {
     private static final int UNDIFFERENTIATED = 3;
     private int anonymousNr = 1;
     public static GridCity city;
-    private Collector collector;
+    private Container container;
     private Deposit deposit;
     private int fontSize;
 
@@ -171,7 +171,7 @@ public class GridCity extends JPanel {
                    if(object == COLLECTOR){
                       if(capacityStr.length() == 0)
                           capacity = 100;
-                      collector = new Collector(name,new Position(row,column),type,capacity);
+                      container = new Container(name,new Position(row,column),type,capacity);
                    }
                    if(object == DEPOSIT) {
                        deposit = new Deposit(name, new Position(row, column), type);
@@ -258,16 +258,20 @@ public class GridCity extends JPanel {
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {
                 String imgTerrain = defaultTerrain;
+                String aux = null;
 
                 if (currV <= ctB.getVertices().size()) {
                     if (ctB.getVertexByName("v" + currV).getX() == i && ctB.getVertexByName("v" + currV).getY() == j) {
                         imgTerrain = ctB.getVertexByName("v" + currV).getProperty("img");
+                        aux = ctB.getVertexByName("v"+currV).getName();
                         currV++;
                     }
                 }
 
                 imgIcon = new ImageIcon("resources/assets/images/" + imgTerrain);
                 g.drawImage(imgIcon.getImage(), j * width, i * height, width, height, null);
+              //  g.setColor(Color.black);
+               // if(aux != null) g.drawString(aux, j*width+32, i*height+40);
             }
         }
 
@@ -315,10 +319,10 @@ public class GridCity extends JPanel {
 
         }
 
-        for (int i = 0; i < GarbageCollector.getInstance().getCollectors().size(); i++) {
+        for (int i = 0; i < GarbageCollector.getInstance().getContainers().size(); i++) {
 
             Image img;
-            GarbageCollector.typeOfWaste type = GarbageCollector.getInstance().getCollectors().get(i).getType();
+            GarbageCollector.typeOfWaste type = GarbageCollector.getInstance().getContainers().get(i).getType();
 
 
             if(type == GarbageCollector.typeOfWaste.GLASS){
@@ -340,16 +344,16 @@ public class GridCity extends JPanel {
 
 
             g.drawImage(img,
-                    GarbageCollector.getInstance().getCollectorsLoc()[i].y * width,
-                    GarbageCollector.getInstance().getCollectorsLoc()[i].x * height,
+                    GarbageCollector.getInstance().getContainerLoc()[i].y * width,
+                    GarbageCollector.getInstance().getContainerLoc()[i].x * height,
                     width,
                     height,
                     null);
 
-            g.drawString(GarbageCollector.getInstance().getCollectors().get(i).getOccupiedCapacity() +
-                            "/"+GarbageCollector.getInstance().getCollectors().get(i).getCapacity(),
-                    GarbageCollector.getInstance().getCollectorsLoc()[i].y * width + width/20*7,
-                    GarbageCollector.getInstance().getCollectorsLoc()[i].x * height + height/22*7);
+            g.drawString(GarbageCollector.getInstance().getContainers().get(i).getOccupiedCapacity() +
+                            "/"+GarbageCollector.getInstance().getContainers().get(i).getCapacity(),
+                    GarbageCollector.getInstance().getContainerLoc()[i].y * width + width/20*7,
+                    GarbageCollector.getInstance().getContainerLoc()[i].x * height + height/22*7);
 
         }
 

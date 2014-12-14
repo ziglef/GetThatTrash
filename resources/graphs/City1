@@ -1,4 +1,4 @@
-([v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22, v23, v24, v25, v26, v27, v28, v29, v30, v31, v32, v33, v34, v35, v36, v37, v38, v39, v40, v41, v42, v43, v44, v45, v46, v47, v48, v49, v50], [(v1,v10), (v2,v1), (v3,v2), (v4,v3), (v5,v4), (v6,v5), (v7,v6), (v8,v7), (v9,v8), (v10,v12), (v11,v9), (v12,v13), (v13,v14), (v14,v15), (v15,v16), (v16,v17), (v16,v21), (v17,v18), (v18,v19), (v18,v22), (v19,v20), (v20,v11), (v21,v27), (v22,v18), (v22,v29), (v23,v19), (v23,v30), (v24,v31), (v25,v24), (v26,v25), (v27,v26), (v27,v32), (v27,v28), (v28,v27), (v28,v29), (v29,v28), (v29,v22), (v30,v23), (v30,v33), (v31,v34), (v32,v27), (v32,v37), (v33,v30), (v33,v38), (v34,v35), (v35,v36), (v35,v39), (v36,v37), (v36,v35), (v37,v36), (v37,v32), (v38,v33), (v38,v40), (v39,v41), (v40,v46), (v40,v38), (v41,v42), (v42,v47), (v42,v43), (v43,v44), (v43,v42), (v44,v43), (v44,v45), (v45,v44), (v45,v46), (v46,v45), (v46,v40), (v47,v48), (v48,v49), (v49,v50), (v50,v45)])
+([v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22, v23, v24, v25, v26, v27, v28, v29, v30, v31, v32, v33, v34, v35, v36, v37, v38, v39, v40, v41, v42, v43, v44, v45, v46, v47, v48, v49, v50], [(v1,v10), (v2,v1), (v3,v2), (v4,v3), (v5,v4), (v6,v5), (v7,v6), (v8,v7), (v9,v8), (v10,v12), (v11,v9), (v12,v13), (v13,v14), (v14,v15), (v15,v16), (v16,v17), (v16,v21), (v17,v18), (v18,v19), (v18,v22), (v19,v20), (v19,v23), (v20,v11), (v21,v27), (v22,v18), (v22,v29), (v23,v19), (v23,v30), (v24,v31), (v25,v24), (v26,v25), (v27,v26), (v27,v32), (v27,v28), (v28,v27), (v28,v29), (v29,v28), (v29,v22), (v30,v23), (v30,v33), (v31,v34), (v32,v27), (v32,v37), (v33,v30), (v33,v38), (v34,v35), (v35,v36), (v35,v39), (v36,v37), (v36,v35), (v37,v36), (v37,v32), (v38,v33), (v38,v40), (v39,v41), (v40,v46), (v40,v38), (v41,v42), (v42,v47), (v42,v43), (v43,v44), (v43,v42), (v44,v43), (v44,v45), (v45,v44), (v45,v46), (v46,v45), (v46,v40), (v47,v48), (v48,v49), (v49,v50), (v50,v45)])
 
 v1:
 coords:0,0
@@ -7,37 +7,37 @@ end
 
 v2:
 coords:0,1
-img:roadTile6.png
+img:roadTile6L.png
 end
 
 v3:
 coords:0,2
-img:roadTile6.png
+img:roadTile6L.png
 end
 
 v4:
 coords:0,3
-img:roadTile6.png
+img:roadTile6L.png
 end
 
 v5:
 coords:0,4
-img:roadTile6.png
+img:roadTile6L.png
 end
 
 v6:
 coords:0,5
-img:roadTile6.png
+img:roadTile6L.png
 end
 
 v7:
 coords:0,6
-img:roadTile6.png
+img:roadTile6L.png
 end
 
 v8:
 coords:0,7
-img:roadTile6.png
+img:roadTile6L.png
 end
 
 v9:
@@ -47,12 +47,12 @@ end
 
 v10:
 coords:1,0
-img:roadTile27.png
+img:roadTile27D.png
 end
 
 v11:
 coords:1,8
-img:roadTile27.png
+img:roadTile27U.png
 end
 
 v12:
@@ -62,17 +62,17 @@ end
 
 v13:
 coords:2,1
-img:roadTile6.png
+img:roadTile6R.png
 end
 
 v14:
 coords:2,2
-img:roadTile6.png
+img:roadTile6R.png
 end
 
 v15:
 coords:2,3
-img:roadTile6.png
+img:roadTile6R.png
 end
 
 v16:
@@ -82,7 +82,7 @@ end
 
 v17:
 coords:2,5
-img:roadTile6.png
+img:roadTile6R.png
 end
 
 v18:
@@ -102,17 +102,17 @@ end
 
 v21:
 coords:3,4
-img:roadTile27.png
+img:roadTile27D.png
 end
 
 v22:
 coords:3,6
-img:roadTile27.png
+img:roadTile27B.png
 end
 
 v23:
 coords:3,7
-img:roadTile27.png
+img:roadTile27B.png
 end
 
 v24:
@@ -122,12 +122,12 @@ end
 
 v25:
 coords:4,2
-img:roadTile6.png
+img:roadTile6L.png
 end
 
 v26:
 coords:4,3
-img:roadTile6.png
+img:roadTile6L.png
 end
 
 v27:
@@ -137,7 +137,7 @@ end
 
 v28:
 coords:4,5
-img:roadTile6.png
+img:roadTile6B.png
 end
 
 v29:
@@ -147,22 +147,22 @@ end
 
 v30:
 coords:4,7
-img:roadTile27.png
+img:roadTile27B.png
 end
 
 v31:
 coords:5,1
-img:roadTile27.png
+img:roadTile27D.png
 end
 
 v32:
 coords:5,4
-img:roadTile27.png
+img:roadTile27B.png
 end
 
 v33:
 coords:5,7
-img:roadTile27.png
+img:roadTile27B.png
 end
 
 v34:
@@ -177,7 +177,7 @@ end
 
 v36:
 coords:6,3
-img:roadTile6.png
+img:roadTile6B.png
 end
 
 v37:
@@ -187,17 +187,17 @@ end
 
 v38:
 coords:6,7
-img:roadTile27.png
+img:roadTile27B.png
 end
 
 v39:
 coords:7,2
-img:roadTile27.png
+img:roadTile27D.png
 end
 
 v40:
 coords:7,7
-img:roadTile27.png
+img:roadTile27B.png
 end
 
 v41:
@@ -212,12 +212,12 @@ end
 
 v43:
 coords:8,4
-img:roadTile6.png
+img:roadTile6B.png
 end
 
 v44:
 coords:8,5
-img:roadTile6.png
+img:roadTile6B.png
 end
 
 v45:
@@ -237,12 +237,12 @@ end
 
 v48:
 coords:9,4
-img:roadTile6.png
+img:roadTile6R.png
 end
 
 v49:
 coords:9,5
-img:roadTile6.png
+img:roadTile6R.png
 end
 
 v50:

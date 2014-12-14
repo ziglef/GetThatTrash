@@ -9,6 +9,8 @@ import java.io.FileNotFoundException;
 
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 public class Interface extends JFrame implements ActionListener, ItemListener{
 
@@ -30,18 +32,19 @@ public class Interface extends JFrame implements ActionListener, ItemListener{
     private JLabel info;
     private IExternalAccess agent;
     private boolean pause;
+    private JSlider slider;
 
     public Interface(final IExternalAccess agent) throws FileNotFoundException{
         //super("Garbage Collection");
 
         memoryCB = new JCheckBox();
         memoryCB.setSelected(false);
-        memoryCB.setText("Memory");
+        memoryCB.setText("Use memory");
         memoryCB.addItemListener(this);
 
         communicationCB = new JCheckBox();
         communicationCB.setSelected(false);
-        communicationCB.setText("Communication");
+        communicationCB.setText("Use communication");
         communicationCB.addItemListener(this);
         createAndDisplayGUI(agent);
         graphInt = this;
@@ -64,7 +67,7 @@ public class Interface extends JFrame implements ActionListener, ItemListener{
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(gridSize, gridSize, 0,0));
 
-        city = new GridCity("resources/graphs/City2", agent);
+        city = new GridCity("resources/graphs/City1", agent);
         contentPane.add(city, BorderLayout.CENTER);
 
         optPane2 = new JPanel();
@@ -128,9 +131,26 @@ public class Interface extends JFrame implements ActionListener, ItemListener{
         optPane2.add(label);
         label= new JLabel("Advanced options:");
         optPane2.add(label);
+        slider = new JSlider(JSlider.HORIZONTAL, 1, 3, 3);
+        slider.setMajorTickSpacing(3);
+        slider.setMinorTickSpacing(1);
+        slider.setPaintTicks(true);
+        slider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                GarbageCollector.getInstance().setVelocity(slider.getValue());
+            }
+        });
+        label= new JLabel("Choose velocity");
+        optPane2.add(label);
+        label = new JLabel("( 1-Low / 2-Med / 3-Fast ) :");
+        optPane2.add(label);
+        optPane2.add(slider);
         optPane2.add(memoryCB);
         optPane2.add(communicationCB);
+
         contentPane.add(optPane2,BorderLayout.WEST);
+
 
         elementsPane = new JPanel();
         elementsPane.setLayout(new GridLayout(0, 1));
@@ -205,7 +225,7 @@ public class Interface extends JFrame implements ActionListener, ItemListener{
             GarbageCollector.getInstance().setMemory(checkbox.isSelected());
 
         if(checkbox == communicationCB)
-            System.out.println("Cliquei na checkbox da comunicacao");
+            GarbageCollector.getInstance().setCommunication(checkbox.isSelected());
 
     }
 

@@ -7,12 +7,12 @@ end
 
 v2:
 coords:0,1
-img:roadTile6.png
+img:roadTile6L.png
 end
 
 v3:
 coords:0,2
-img:roadTile6.png
+img:roadTile6L.png
 end
 
 v4:
@@ -22,7 +22,7 @@ end
 
 v5:
 coords:0,4
-img:roadTile6.png
+img:roadTile6L.png
 end
 
 v6:
@@ -42,17 +42,17 @@ end
 
 v9:
 coords:1,0
-img:roadTile27.png
+img:roadTile27D.png
 end
 
 v10:
 coords:1,3
-img:roadTile27.png
+img:roadTile27B.png
 end
 
 v11:
 coords:1,5
-img:roadTile27.png
+img:roadTile27D.png
 end
 
 v12:
@@ -67,7 +67,7 @@ end
 
 v14:
 coords:2,1
-img:roadTile6.png
+img:roadTile6R.png
 end
 
 v15:
@@ -97,7 +97,7 @@ end
 
 v20:
 coords:2,8
-img:roadTile6.png
+img:roadTile6L.png
 end
 
 v21:
@@ -122,17 +122,17 @@ end
 
 v25:
 coords:3,3
-img:roadTile6.png
+img:roadTile6B.png
 end
 
 v26:
 coords:3,4
-img:roadTile6.png
+img:roadTile6B.png
 end
 
 v27:
 coords:3,5
-img:roadTile6.png
+img:roadTile6B.png
 end
 
 v28:
@@ -142,12 +142,12 @@ end
 
 v29:
 coords:3,7
-img:roadTile6.png
+img:roadTile6B.png
 end
 
 v30:
 coords:3,8
-img:roadTile6.png
+img:roadTile6B.png
 end
 
 v31:
@@ -157,12 +157,12 @@ end
 
 v32:
 coords:4,1
-img:roadTile27.png
+img:roadTile27D.png
 end
 
 v33:
 coords:4,6
-img:roadTile27.png
+img:roadTile27U.png
 end
 
 v34:
@@ -182,7 +182,7 @@ end
 
 v37:
 coords:5,2
-img:roadTile6.png
+img:roadTile6B.png
 end
 
 v38:
@@ -197,32 +197,32 @@ end
 
 v40:
 coords:5,6
-img:roadTile27.png
+img:roadTile27U.png
 end
 
 v41:
 coords:5,8
-img:roadTile27.png
+img:roadTile27U.png
 end
 
 v42:
 coords:6,1
-img:roadTile27.png
+img:roadTile27D.png
 end
 
 v43:
 coords:6,4
-img:roadTile27.png
+img:roadTile27B.png
 end
 
 v44:
 coords:6,6
-img:roadTile27.png
+img:roadTile27U.png
 end
 
 v45:
 coords:6,8
-img:roadTile27.png
+img:roadTile27U.png
 end
 
 v46:
@@ -237,7 +237,7 @@ end
 
 v48:
 coords:7,3
-img:roadTile6.png
+img:roadTile6R.png
 end
 
 v49:
@@ -247,7 +247,7 @@ end
 
 v50:
 coords:7,5
-img:roadTile6.png
+img:roadTile6R.png
 end
 
 v51:
@@ -257,12 +257,12 @@ end
 
 v52:
 coords:7,8
-img:roadTile27.png
+img:roadTile27U.png
 end
 
 v53:
 coords:8,2
-img:roadTile27.png
+img:roadTile27B.png
 end
 
 v54:
@@ -272,7 +272,7 @@ end
 
 v55:
 coords:8,5
-img:roadTile6.png
+img:roadTile6R.png
 end
 
 v56:
@@ -282,7 +282,7 @@ end
 
 v57:
 coords:8,7
-img:roadTile6.png
+img:roadTile6R.png
 end
 
 v58:
@@ -297,17 +297,17 @@ end
 
 v60:
 coords:9,3
-img:roadTile6.png
+img:roadTile6B.png
 end
 
 v61:
 coords:9,4
-img:roadTile6.png
+img:roadTile6B.png
 end
 
 v62:
 coords:9,5
-img:roadTile6.png
+img:roadTile6B.png
 end
 
 v63:

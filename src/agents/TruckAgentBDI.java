@@ -1,23 +1,21 @@
 package agents;
 
 import gui.GridCity;
+import jadex.bridge.service.types.chat.IChatService;
+import jadex.commons.future.DefaultResultListener;
+import jadex.commons.future.IFuture;
+import jadex.rules.rulesystem.rules.functions.IFunction;
 import javafx.geometry.Pos;
-import main.Collector;
-import main.Deposit;
+import main.*;
 import map.Vertex;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.alg.DijkstraShortestPath;
 import jadex.bdiv3.BDIAgent;
 import jadex.bdiv3.annotation.*;
 import jadex.micro.annotation.*;
-import main.GarbageCollector;
-import main.Position;
 
-import java.lang.reflect.Array;
-import java.nio.channels.GatheringByteChannel;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import javax.print.attribute.standard.RequestingUserName;
+import java.util.*;
 
 
 @Agent
@@ -28,6 +26,11 @@ import java.util.List;
         @Argument(name = "Type", clazz = GarbageCollector.typeOfWaste.class),
         @Argument(name = "PositionX", clazz = Integer.class),
         @Argument(name = "PositionY", clazz = Integer.class)
+})
+@ProvidedServices(@ProvidedService(type=IChatService.class, implementation=@Implementation(ChatService.class)))
+@RequiredServices({
+        @RequiredService(name="chat", type=IChatService.class, multiple=true,
+                binding=@Binding(dynamic=true, scope=Binding.SCOPE_PLATFORM))
 })
 public class TruckAgentBDI {
 
@@ -43,8 +46,13 @@ public class TruckAgentBDI {
     @Belief
     int capacity;
 
+    @Belief
     GarbageCollector.typeOfWaste type = GarbageCollector.typeOfWaste.UNDIFFERENTIATED;
+
+    @Belief
     Position pos;
+
+    @Belief
     int occupiedCapacity;
 
     @Belief
@@ -54,24 +62,30 @@ public class TruckAgentBDI {
     boolean memory = false;
 
     @Belief
-    boolean full = false;
-
-    @Belief
     boolean mission = false;
 
-    @Belief
-    boolean communication = false;
-
-    @Belief
-    public static final long SLEEP = 300;
+    private long SLEEP_LOW = 300;
+    private long SLEEP_MEDIUM = 100;
+    private long SLEEP_FAST = 25;
 
     private ArrayList<Position> steps;
+
+    @Belief
     public static final String AGENT_PATH = "out\\production\\AIAD\\agents\\TruckAgentBDI.class";
+
+    @Belief
     private GridCity gc;
+
+    @Belief
     private int remainderCapacity = 0;
-    private static ArrayList<Position> collectorsInMemory;
-    private static ArrayList<Position> depositsInMemory;
+
+    private ArrayList<Position> collectorsInMemory;
+    private ArrayList<Position> depositsInMemory;
+
+    @Belief
     private Position lastPos;
+
+    private Map<Integer, Integer> messages;
 
 
     /*------------------------------
@@ -98,13 +112,14 @@ public class TruckAgentBDI {
         collectorsInMemory = new ArrayList<>();
         depositsInMemory = new ArrayList<>();
         lastPos = new Position(-1, -1);
+        messages = new HashMap<>();
     }
 
     @AgentBody
     public void body() {
         agent.dispatchTopLevelGoal(new CheckContainer());
-        agent.dispatchTopLevelGoal(new GoToDeposit());
         agent.dispatchTopLevelGoal(new WanderAroundCity());
+        agent.dispatchTopLevelGoal(new GoToDeposit());
     }
 
     @AgentKilled
@@ -163,14 +178,22 @@ public class TruckAgentBDI {
 
         do {
             try {
-                Thread.sleep(SLEEP);
+                Thread.sleep(SLEEP_LOW);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         } while (pause = GarbageCollector.getInstance().getPause());
 
         try {
-            Thread.sleep(SLEEP);
+            switch (GarbageCollector.getInstance().getVelocity()){
+                case 1: Thread.sleep(SLEEP_LOW);
+                    System.out.println("LOW");break;
+                case 2: Thread.sleep(SLEEP_MEDIUM);
+                    System.out.println("MEDIUM");break;
+                case 3: Thread.sleep(SLEEP_FAST);
+                    System.out.println("FAST");break;
+                default: break;
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -179,11 +202,6 @@ public class TruckAgentBDI {
         gc.validate();
         gc.repaint();
 
-        try {
-            Thread.sleep(SLEEP);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     @Plan(trigger = @Trigger(goals = CheckContainer.class))
@@ -191,38 +209,66 @@ public class TruckAgentBDI {
 
         do {
             try {
-                Thread.sleep(SLEEP);
+                Thread.sleep(SLEEP_LOW);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         } while (pause = GarbageCollector.getInstance().getPause());
 
-        ArrayList<Collector> adjacentsCollectors = GarbageCollector.getInstance().checkAdjacentCollectorPos(pos);
+        ArrayList<Container> adjacentsContainers = GarbageCollector.getInstance().checkAdjacentContainerPos(pos);
 
-        if (adjacentsCollectors.size() > 0) {
-            for (int i = 0; i < adjacentsCollectors.size(); i++) {
+        if(adjacentsContainers.size() > 0) {
+            for (int i = 0; i < adjacentsContainers.size(); i++) {
 
-                if (adjacentsCollectors.get(i).getType() == type) {
-                    if (!collectorsInMemory.contains(adjacentsCollectors.get(i).getPosition()) && GarbageCollector.getInstance().getMemory()) {
-                        collectorsInMemory.add(adjacentsCollectors.get(i).getPosition());
-                        System.out.println("Adicionei a lista dos collectors que conheco o collector na posicao " + adjacentsCollectors.get(i).getPosition().x + "-" + adjacentsCollectors.get(i).getPosition().y);
+                if (adjacentsContainers.get(i).getType() == type) {
+                    if (!collectorsInMemory.contains(adjacentsContainers.get(i).getPosition()) && GarbageCollector.getInstance().getMemory()) {
+                        collectorsInMemory.add(adjacentsContainers.get(i).getPosition());
+                        //System.out.println("Adicionei a lista dos collectors que conheco o collector na posicao " + adjacentsCollectors.get(i).getPosition().x + "-" + adjacentsCollectors.get(i).getPosition().y);
                     }
 
                     if (occupiedCapacity < capacity) {
-                        if (occupiedCapacity + adjacentsCollectors.get(i).getOccupiedCapacity() > capacity) {
-                            remainderCapacity = occupiedCapacity + adjacentsCollectors.get(i).getOccupiedCapacity() - capacity;
+                        if (occupiedCapacity + adjacentsContainers.get(i).getOccupiedCapacity() > capacity) {
+                            remainderCapacity = occupiedCapacity + adjacentsContainers.get(i).getOccupiedCapacity() - capacity;
                             occupiedCapacity = capacity;
-                            adjacentsCollectors.get(i).setOccupiedCapacity(remainderCapacity);
-                            i = adjacentsCollectors.size();
+                            adjacentsContainers.get(i).setOccupiedCapacity(remainderCapacity);
+                            i = adjacentsContainers.size();
                         } else {
-                            occupiedCapacity += adjacentsCollectors.get(i).getOccupiedCapacity();
-                            adjacentsCollectors.get(i).setOccupiedCapacity(0);
+                            occupiedCapacity += adjacentsContainers.get(i).getOccupiedCapacity();
+                            adjacentsContainers.get(i).setOccupiedCapacity(0);
                         }
                         try {
-                            Thread.sleep(SLEEP);
+                            switch (GarbageCollector.getInstance().getVelocity()){
+                                case 1: Thread.sleep(SLEEP_LOW);break;
+                                case 2: Thread.sleep(SLEEP_MEDIUM);break;
+                                case 3: Thread.sleep(SLEEP_FAST);break;
+                                default: break;
+                            }
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
+                    }else{
+                        if(GarbageCollector.getInstance().getCommunication()){
+                            //TODO apanhar sempre, só quando tiver mais de metade ou só quando tiver cheio
+                            String message = "GARBAGE " +
+                                    GarbageCollector.getInstance().getMsgNr(true) + " " +
+                                    adjacentsContainers.get(i).getType() + " " +
+                                    adjacentsContainers.get(i).getOccupiedCapacity() + " " +
+                                    adjacentsContainers.get(i).getPosition().x + "-" + adjacentsContainers.get(i).getPosition().y;
+                            sendMessage(message, true);
+                            System.out.println("Mensagem inserida: " + (GarbageCollector.getInstance().getMsgNr(false)));
+                            GarbageCollector.getInstance().setClfm(GarbageCollector.getInstance().getMsgNr(false), pos);
+                        }
+                    }
+                }else{
+                    if(GarbageCollector.getInstance().getCommunication()){
+                        String message = "GARBAGE " +
+                                GarbageCollector.getInstance().getMsgNr(true) + " " +
+                                adjacentsContainers.get(i).getType() + " " +
+                                adjacentsContainers.get(i).getOccupiedCapacity() + " " +
+                                adjacentsContainers.get(i).getPosition().x + "-" + adjacentsContainers.get(i).getPosition().y;
+                        sendMessage(message, true);
+                        System.out.println("Mensagem inserida: " + (GarbageCollector.getInstance().getMsgNr(false)));
+                        GarbageCollector.getInstance().setClfm(GarbageCollector.getInstance().getMsgNr(false), pos);
                     }
                 }
             }
@@ -234,18 +280,18 @@ public class TruckAgentBDI {
 
         do {
             try {
-                Thread.sleep(SLEEP);
+                Thread.sleep(SLEEP_LOW);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         } while (GarbageCollector.getInstance().getPause());
 
-        if (occupiedCapacity == capacity && depositsInMemory.size() > 0 && !mission) {
-            steps = getShortestPath(depositsInMemory);
+        if (occupiedCapacity == capacity && !depositsInMemory.isEmpty() && !mission) {
+            this.steps = getShortestPath(depositsInMemory);
             mission = true;
         }
 
-        ArrayList<Deposit> adjacentDeposits = GarbageCollector.getInstance().checkAdjacentDEpositPos(pos);
+        ArrayList<Deposit> adjacentDeposits = GarbageCollector.getInstance().checkAdjacentDepositPos(pos);
         if (adjacentDeposits.size() > 0) {
 
             for (int i = 0; i < adjacentDeposits.size(); i++) {
@@ -256,15 +302,23 @@ public class TruckAgentBDI {
                     steps.clear();
                     mission = false;
                     try {
-                        Thread.sleep(SLEEP);
+                        switch (GarbageCollector.getInstance().getVelocity()){
+                            case 1: Thread.sleep(SLEEP_LOW);
+                                System.out.println("LOW");break;
+                            case 2: Thread.sleep(SLEEP_MEDIUM);
+                                System.out.println("MEDIUM");break;
+                            case 3: Thread.sleep(SLEEP_FAST);
+                                System.out.println("FAST");break;
+                            default: break;
+                        }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
 
-                if (!depositsInMemory.contains(adjacentDeposits.get(i).getPosition()) && GarbageCollector.getInstance().getMemory()) {
+                if (!depositsInMemory.contains(adjacentDeposits.get(i).getPosition()) && GarbageCollector.getInstance().getMemory() && adjacentDeposits.get(i).getType() == type) {
                     depositsInMemory.add(adjacentDeposits.get(i).getPosition());
-                    System.out.println("Adicionei a lista dos depositos que conheco o deposito na posicao " + adjacentDeposits.get(i).getPosition().x + "-" + adjacentDeposits.get(i).getPosition().y);
+                    System.out.println(name + ": Adicionei a lista dos depositos que conheco o deposito na posicao " + adjacentDeposits.get(i).getPosition().x + "-" + adjacentDeposits.get(i).getPosition().y);
                 }
             }
         }
@@ -275,6 +329,7 @@ public class TruckAgentBDI {
        Methods
     *---------------------------*/
 
+
     public void setPause(boolean pause) {
         this.pause = pause;
     }
@@ -282,9 +337,8 @@ public class TruckAgentBDI {
     public void updatePos() throws InterruptedException {
 
         // have a trip to do
-        if (steps.size() > 0) {
+        if (!steps.isEmpty() && steps != null) {
             pos = steps.remove(steps.size() - 1);
-            System.out.println("Tou a fazer um passo presente em STEPS");
         } else {
             mission = false;
             ArrayList<Position> neighbors = autoMove();
@@ -292,8 +346,7 @@ public class TruckAgentBDI {
             if (neighbors.size() == 1) {
                 lastPos = pos;
                 pos = neighbors.get(0);
-            }
-            else {
+            } else {
                 do {
                     aux = neighbors.get(((int) (Math.random() * 1000) % neighbors.size()));
                 } while (aux.equals(lastPos));
@@ -345,7 +398,6 @@ public class TruckAgentBDI {
     }
 
     public ArrayList<Position> getShortestPath(Position dest) {
-        System.out.println("3 - \n" + dest.toString());
         ArrayList<Position> path = new ArrayList<>();
 
         ArrayList<Position> neighbors = new ArrayList<>();
@@ -413,6 +465,96 @@ public class TruckAgentBDI {
 
     public int getOccupiedCapacity() {
         return occupiedCapacity;
+    }
+
+    public void getMessage(String name, String message, boolean original) {
+
+
+        if(occupiedCapacity < capacity && name != this.name){
+            System.out.println(this.name+":"+ " Recebi de " + name + " a mensagem: " + message);
+            String[] msg = message.split(" ");
+            if(original) {
+                System.out.println("1");
+                if(msg[0].equals("GARBAGE") && msg[2].equals(type.toString())){
+                    System.out.println("2");
+                    String[] position = msg[4].split("-");
+                    Position aux_pos = new Position(Integer.parseInt(position[0]), Integer.parseInt(position[1]));
+                    int distance = getShortestPath(aux_pos).size();
+                    String message2send = "DIST " + msg[1] + " " + distance;
+                    sendMessage(message2send, false);
+                    messages.put(Integer.parseInt(msg[1]), distance);
+                    WaitABit wt = new WaitABit(this, Integer.parseInt(msg[1]));
+                    Thread t = new Thread(wt);
+                    t.start();
+                }
+            }else{
+                System.out.println("Recebi uma mensagem que nao era original e que nao era minha");
+                if(messages.get(Integer.parseInt(msg[1])) != null){
+                    System.out.println("Essa mensagem estava no meu mapa de mensagens");
+                    Integer distance = Integer.parseInt(msg[2]);
+                    Integer myD = messages.get(Integer.parseInt(msg[1]));
+                    System.out.println("Distancia : " + distance +"; Minha distancia: " + myD);
+                    if(distance < myD)
+                        messages.remove(Integer.parseInt(msg[1]));
+                }
+            }
+        }
+    }
+
+    public void sendMessage(final String message, final boolean original){
+
+        IFuture<Collection<IChatService>> cs = agent.getServiceContainer().getRequiredServices("chat");
+        cs.addResultListener(new DefaultResultListener<Collection<IChatService>>() {
+            @Override
+            public void resultAvailable(Collection<IChatService> iChatServices) {
+                for(Iterator<IChatService> it=iChatServices.iterator(); it.hasNext(); ) {
+                    IChatService chat = it.next();
+                    chat.message(name, message, original);
+                }
+            }
+        });
+    }
+
+    public class WaitABit implements Runnable{
+
+        private Integer msgNr;
+        private TruckAgentBDI truck;
+
+        public WaitABit(TruckAgentBDI truck, Integer msgNr){
+            this.msgNr = msgNr;
+            this.truck = truck;
+        }
+
+        @Override
+        public void run() {
+
+            System.out.println("Vou esperar respostas durante 5s");
+
+            do {
+                try {
+                    Thread.sleep(SLEEP_LOW);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            } while (GarbageCollector.getInstance().getPause());
+
+
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+
+            if(truck.messages.get(msgNr) != null){
+                System.out.println("Tenho a mensagem, vou calcular o caminho mais curto para la e vou - " + truck.name);
+                Position position = GarbageCollector.getInstance().getClfmGivingNr(msgNr);
+                System.out.println(position);
+                truck.steps = truck.getShortestPath(position);
+                truck.mission = true;
+            }
+
+        }
     }
 
 }
