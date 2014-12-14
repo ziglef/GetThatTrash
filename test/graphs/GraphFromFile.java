@@ -10,7 +10,12 @@ import org.junit.Test;
 
 import java.io.File;
 
-// Class used for testing the reading of graphs from files
+/**
+ * Class used for testing the reading of graphs from files
+ *
+ * @author Rui Grandão  - ei11010@fe.up.pt
+ * @author Tiago Coelho - ei11012@fe.up.pt
+ */
 public class GraphFromFile {
 
     MapBuilder defaultEmptyMB = new MapBuilder(0);
@@ -44,8 +49,6 @@ public class GraphFromFile {
     @Test
     public void readEmptyGraphRefs(){
         MapBuilder fromFileMB = new CityMapBuilder(new File("resources/graphs/empty"));
-
-        // Assert.assertEquals(getGraphString(defaultEmptyMB.getGraph()), getGraphString(fromFileMB.getGraph()));
         Assert.assertEquals(defaultEmptyMB.getVerticesRef().toString(), fromFileMB.getVerticesRef().toString());
         Assert.assertEquals(defaultEmptyMB.getEdgesRef().toString(), fromFileMB.getEdgesRef().toString());
     }
@@ -53,8 +56,6 @@ public class GraphFromFile {
     @Test
     public void readVerticesGraphRefs(){
         MapBuilder fromFileMB = new CityMapBuilder(new File("resources/graphs/vertices"));
-
-        // Assert.assertEquals(getGraphString(defaultVerticesMB.getGraph()), getGraphString(fromFileMB.getGraph()));
         Assert.assertEquals(defaultVerticesMB.getVerticesRef().toString(), fromFileMB.getVerticesRef().toString());
         Assert.assertEquals(defaultVerticesMB.getEdgesRef().toString(), fromFileMB.getEdgesRef().toString());
     }
@@ -62,8 +63,6 @@ public class GraphFromFile {
     @Test
     public void readVerticesAndEdgesGraphRefs(){
         MapBuilder fromFileMB = new CityMapBuilder(new File("resources/graphs/verticesAndEdges"));
-
-        // Assert.assertEquals(getGraphString(defaultVerticesAndEdgesMB.getGraph()), getGraphString(fromFileMB.getGraph()));
         Assert.assertEquals(defaultVerticesAndEdgesMB.getVerticesRef().toString(), fromFileMB.getVerticesRef().toString());
         Assert.assertEquals(defaultVerticesAndEdgesMB.getEdgesRef().toString(), fromFileMB.getEdgesRef().toString());
     }
@@ -71,21 +70,18 @@ public class GraphFromFile {
     @Test
     public void readEmptyGraph(){
         MapBuilder fromFileMB = new CityMapBuilder(new File("resources/graphs/empty"));
-
         Assert.assertEquals(getGraphString(defaultEmptyMB.getGraph()), getGraphString(fromFileMB.getGraph()));
     }
 
     @Test
     public void readVerticesGraph(){
         MapBuilder fromFileMB = new CityMapBuilder(new File("resources/graphs/vertices"));
-
         Assert.assertEquals(getGraphString(defaultVerticesMB.getGraph()), getGraphString(fromFileMB.getGraph()));
     }
 
     @Test
     public void readVerticesAndEdgesGraph(){
         MapBuilder fromFileMB = new CityMapBuilder(new File("resources/graphs/verticesAndEdges"));
-
         Assert.assertEquals(getGraphString(defaultVerticesAndEdgesMB.getGraph()), getGraphString(fromFileMB.getGraph()));
     }
 }

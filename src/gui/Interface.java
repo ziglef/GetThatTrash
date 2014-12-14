@@ -1,68 +1,89 @@
 package gui;
 
 import jadex.bridge.IExternalAccess;
+import main.Chart;
 import main.GarbageCollector;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.io.FileNotFoundException;
-
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+/**
+ * Class responsible for prepare and show all the Interface to the user.
+ *
+ * @author Rui Grandão  - ei11010@fe.up.pt
+ * @author Tiago Coelho - ei11012@fe.up.pt
+ * @see java.awt.event.ActionListener
+ * @see java.awt.event.ItemListener
+ */
 public class Interface extends JFrame implements ActionListener, ItemListener{
 
 	private static final long serialVersionUID = 1L;
 	private static int gridSize = 10;
-    private JCheckBox communicationCB;
-    private JCheckBox memoryCB;
-    private JButton newBTN, pauseBTN, helpBTN, exitBTN;
-    private JRadioButton[] radioComponent;
-    private ButtonGroup radioComponentGroup;
-    private JRadioButton[] radioComponentType;
-    private ButtonGroup radioComponentTypeGroup;
+    private JCheckBox communicationCB, memoryCB;
+    private JButton newBTN, pauseBTN, statisticsBTN, showChart, exitBTN;
+    private JRadioButton[] radioComponent, radioComponentType;
+    private ButtonGroup radioComponentGroup, radioComponentTypeGroup;
     private JPanel optPane2, infoPanel, elementsPane;
     private GridCity city;
     public static Interface graphInt;
     private JTextField agentName, agentCapacity;
-    private JLabel agentNameLabel;
-    private JLabel agentCapacityLabel;
-    private JLabel info;
+    private JLabel agentNameLabel, agentCapacityLabel, info;
     private IExternalAccess agent;
     private boolean pause;
     private JSlider slider;
+    private Chart localMemoryUsageDemo;
+    private JFrame localJFrame;
+    private boolean showingChart = false;
 
+    /**
+     * Constructor of Interface
+     *
+     * @param agent - External acess to interface agent
+     * @throws FileNotFoundException - if dont found the city file
+     */
     public Interface(final IExternalAccess agent) throws FileNotFoundException{
-        //super("Garbage Collection");
-
-        memoryCB = new JCheckBox();
-        memoryCB.setSelected(false);
-        memoryCB.setText("Use memory");
-        memoryCB.addItemListener(this);
-
-        communicationCB = new JCheckBox();
-        communicationCB.setSelected(false);
-        communicationCB.setText("Use communication");
-        communicationCB.addItemListener(this);
+        super("AIAD 2014/1015 - Garbage Collector - Rui Grandão - Tiago Coelho");
         createAndDisplayGUI(agent);
         graphInt = this;
         pause = false;
     }
 
-
-
+    /**
+     * Method that create and display all the interface components
+     * @param agent - External acess for interface agent
+     */
     private void createAndDisplayGUI(IExternalAccess agent){
         this.agent = agent;
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setPreferredSize(new Dimension(1024,768));
         setMinimumSize(new Dimension(800,600));
 
+        memoryCB = new JCheckBox();
+        memoryCB.setSelected(false);
+        memoryCB.setText("Use memory");
+        memoryCB.addItemListener(this);
+        communicationCB = new JCheckBox();
+        communicationCB.setSelected(false);
+        communicationCB.setText("Use communication");
+        communicationCB.addItemListener(this);
+
         JPanel contentPane = new JPanel();
         Border padding = BorderFactory.createEmptyBorder(10,10,10,10);
         contentPane.setBorder(padding);
         contentPane.setLayout(new BorderLayout(10,10));
+
+        localJFrame = new JFrame("AIAD 2014/2015 - Garbage Collector - Statistics");
+        localMemoryUsageDemo = new Chart();
+        localJFrame.setResizable(false);
+        localJFrame.setSize(new Dimension(800,600));
+        localJFrame.getContentPane().add(localMemoryUsageDemo.getChartPanel());
+        localJFrame.setVisible(false);
+        Chart tmp56_55 = localMemoryUsageDemo;
+        tmp56_55.getClass();
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(gridSize, gridSize, 0,0));
@@ -76,7 +97,8 @@ public class Interface extends JFrame implements ActionListener, ItemListener{
 
         newBTN = new JButton("New");
         pauseBTN = new JButton("Pause");
-        helpBTN = new JButton("Help");
+        statisticsBTN = new JButton("Generate Statistics");
+        showChart = new JButton("Show Chart");
         exitBTN = new JButton("Exit");
         agentName = new JTextField("");
         agentName.setMaximumSize(new Dimension(100,5));
@@ -88,8 +110,10 @@ public class Interface extends JFrame implements ActionListener, ItemListener{
         newBTN.addActionListener(this);
         optPane2.add(pauseBTN);
         pauseBTN.addActionListener(this);
-        optPane2.add(helpBTN);
-        helpBTN.addActionListener(this);
+        optPane2.add(statisticsBTN);
+        statisticsBTN.addActionListener(this);
+        optPane2.add(showChart);
+        showChart.addActionListener(this);
         optPane2.add(exitBTN);
         exitBTN.addActionListener(this);
 
@@ -181,6 +205,16 @@ public class Interface extends JFrame implements ActionListener, ItemListener{
                     System.exit(0);
             }
         });
+
+        localJFrame.addWindowListener(new WindowAdapter()
+        {
+            public void windowClosing(WindowEvent paramAnonymousWindowEvent)
+            {
+                localJFrame.dispose();
+                showingChart = false;
+                showChart.setText("Show Chart");
+            }
+        });
     }
 
     @Override
@@ -200,7 +234,23 @@ public class Interface extends JFrame implements ActionListener, ItemListener{
                 validate();
                 repaint();
             }
-        }else if(clicked == pauseBTN){
+        }else if(clicked == statisticsBTN) {
+            localJFrame.setVisible(true);
+            statisticsBTN.setEnabled(false);
+            showingChart = true;
+            showChart.setText("Hide Chart");
+            GarbageCollector.getInstance().setGenerateStatistics(true);
+        }else if(clicked == showChart){
+                if(!showingChart){
+                    localJFrame.setVisible(true);
+                    showChart.setText("Hide Chart");
+                    showingChart = true;
+                }else{
+                    localJFrame.dispose();
+                    showChart.setText("Show Chart");
+                    showingChart = false;
+                }
+        } if(clicked == pauseBTN){
             if(pause) {
                 pause = false;
                 pauseBTN.setText("Pause");
@@ -229,41 +279,78 @@ public class Interface extends JFrame implements ActionListener, ItemListener{
 
     }
 
+    /**
+     * Method tha returns the agent name created
+     *
+     * @return - agent name
+     */
     public JTextField getAgentName() {
         return agentName;
     }
 
+    /**
+     * Method tha returns the agent capacity created
+     *
+     * @return - agent capacity
+     */
     public JTextField getAgentCapacity() {
         return agentCapacity;
     }
 
+    /**
+     * Method tha returns the radioButton Group to check
+     * the component to created
+     *
+     * @return - JRadioButton[]
+     */
     public JRadioButton[] getRadioComponent() {
         return radioComponent;
     }
 
+    /**
+     * Method tha returns the radioButton Group to check
+     * the type component to created
+     *
+     * @return - JRadioButton[]
+     */
     public JRadioButton[] getRadioComponentType() {
         return radioComponentType;
     }
 
-    public String getInfo() {
-        return info.getText();
-    }
-
+    /**
+     * Methot that set the text to be displayed on the info panel
+     *
+     * @param info - text to be displayed
+     */
     public void setInfo(String info) {
         this.info.setText(info);
     }
 
+    /**
+     * Methot that set infoPanel visible or not
+     *
+     * @param value - true to be displayed, false otherwise
+     */
     public void setInfoVisible(boolean value) {
          infoPanel.setVisible(value);
     }
 
+    /**
+     * Method that returns the actual gridCity
+     *
+     * @return - the city
+     */
     public GridCity getCity() {
         return city;
     }
 
+    /**
+     * Method that return the pause state
+     *
+     * @return - true if it pause, false otherwise
+     */
     public boolean getPause() {
         return pause;
     }
-
 
 }

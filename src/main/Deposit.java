@@ -2,6 +2,13 @@ package main;
 
 import java.util.Random;
 
+/**
+ * Class responsible for creating a deposit
+ *
+ * @author Rui Grandão  - ei11010@fe.up.pt
+ * @author Tiago Coelho - ei11012@fe.up.pt
+ * @see Runnable
+ */
 public class Deposit implements Runnable {
 
     private String id;
@@ -13,6 +20,13 @@ public class Deposit implements Runnable {
     private Random rn;
     private Position pos;
 
+    /**
+     * Constructor of a Deposit.
+     *
+     * @param id - string identifier of the deposit
+     * @param pos - position of the deposit
+     * @param type - type of the deposit
+     */
     public Deposit(String id, Position pos, GarbageCollector.typeOfWaste type) {
         this.id = id;
         this.type = type;
@@ -24,6 +38,9 @@ public class Deposit implements Runnable {
         GarbageCollector.getInstance().addDeposit(this);
     }
 
+    /**
+     * Thread that decrement the deposit garbage, simmulating reciclying
+     */
     @Override
     public void run() {
 
@@ -46,18 +63,37 @@ public class Deposit implements Runnable {
         }
     }
 
+    /**
+     * Method that returns the Deposit Position
+     *
+     * @return - deposit position
+     */
     public Position getPosition() {
         return pos;
     }
 
+    /**
+     * Method thar returns the Deposit type
+     * @return - type of deposit
+     */
     public GarbageCollector.typeOfWaste getType() {
         return type;
     }
 
+
+    /**
+     * Method thart returs the actual occupied capacity of deposit
+     * @return - occupiedcapacity
+     */
     public int getOccupiedCapacity() {
         return occupiedCapacity;
     }
 
+    /**
+     * Method that sets the occupied capacity of deposit
+     *
+     * @param ocapacity - capacity to be added to occupiedcapacity
+     */
     public void setOccupiedCapacity(int ocapacity) {
         this.occupiedCapacity = ocapacity;
     }

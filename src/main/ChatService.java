@@ -10,7 +10,14 @@ import jadex.commons.future.IFuture;
 import jadex.commons.future.ITerminableFuture;
 import jadex.commons.future.ITerminableIntermediateFuture;
 
-
+/**
+ * Class responsible for send messanges for truck agents,
+ * using IChatService.
+ *
+ * @author Rui Grandão  - ei11010@fe.up.pt
+ * @author Tiago Coelho - ei11012@fe.up.pt
+ * @see IChatService
+ */
 @Service
 public class ChatService implements IChatService{
 
@@ -32,6 +39,14 @@ public class ChatService implements IChatService{
         return null;
     }
 
+    /**
+     * Method used to truck get a message
+     *
+     * @param name - name of the truck that sends the message
+     * @param message - message
+     * @param original - true if is the original message, false othewise
+     * @return - IFuture<Void>
+     */
     @Override
     public IFuture<Void> message(String name, String message, boolean original) {
 

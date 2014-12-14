@@ -4,8 +4,6 @@ import gui.GridCity;
 import jadex.bridge.service.types.chat.IChatService;
 import jadex.commons.future.DefaultResultListener;
 import jadex.commons.future.IFuture;
-import jadex.rules.rulesystem.rules.functions.IFunction;
-import javafx.geometry.Pos;
 import main.*;
 import map.Vertex;
 import org.jgrapht.graph.DefaultEdge;
@@ -13,11 +11,16 @@ import org.jgrapht.alg.DijkstraShortestPath;
 import jadex.bdiv3.BDIAgent;
 import jadex.bdiv3.annotation.*;
 import jadex.micro.annotation.*;
-
-import javax.print.attribute.standard.RequestingUserName;
 import java.util.*;
 
 
+/**
+ * Class responsible for creating a truck Agent
+ *
+ * @author Rui Grandão  - ei11010@fe.up.pt
+ * @author Tiago Coelho - ei11012@fe.up.pt
+ *
+ */
 @Agent
 @Description("Agent that launch a new garbage truck of a specific type.")
 @Arguments({
@@ -64,12 +67,6 @@ public class TruckAgentBDI {
     @Belief
     boolean mission = false;
 
-    private long SLEEP_LOW = 300;
-    private long SLEEP_MEDIUM = 100;
-    private long SLEEP_FAST = 25;
-
-    private ArrayList<Position> steps;
-
     @Belief
     public static final String AGENT_PATH = "out\\production\\AIAD\\agents\\TruckAgentBDI.class";
 
@@ -79,18 +76,22 @@ public class TruckAgentBDI {
     @Belief
     private int remainderCapacity = 0;
 
-    private ArrayList<Position> collectorsInMemory;
-    private ArrayList<Position> depositsInMemory;
-
     @Belief
     private Position lastPos;
 
+    private ArrayList<Position> collectorsInMemory;
+    private ArrayList<Position> depositsInMemory;
+    private ArrayList<Position> steps;
+    private long SLEEP_LOW = 300;
     private Map<Integer, Integer> messages;
 
 
     /*------------------------------
         Agent
     *-----------------------------*/
+    /**
+     * Method responsible to initializing the truck Agent components
+     */
     @AgentCreated
     public void init() {
         name = (String) agent.getArgument("Name");
@@ -115,6 +116,10 @@ public class TruckAgentBDI {
         messages = new HashMap<>();
     }
 
+    /**
+     * Method invoked immediately after truck Agent creation.
+     * Start agent's goals.
+     */
     @AgentBody
     public void body() {
         agent.dispatchTopLevelGoal(new CheckContainer());
@@ -122,17 +127,23 @@ public class TruckAgentBDI {
         agent.dispatchTopLevelGoal(new GoToDeposit());
     }
 
+    /**
+     * Method invoked when a truck agent is killed
+     */
     @AgentKilled
     public void killed() {
         System.out.println("Killed agent" + agent.getAgentName());
     }
 
+
     /*-----------------------------
        Goals
      *---------------------------*/
+    /**
+     * Goal of the truck to wander around the city
+     */
     @Goal(excludemode = Goal.ExcludeMode.Never, retry = true, orsuccess = false)
     public class WanderAroundCity {
-
 
         @GoalResult
         protected int r;
@@ -144,6 +155,9 @@ public class TruckAgentBDI {
 
     }
 
+    /**
+     * Goal of the truck to check a container
+     */
     @Goal(excludemode = Goal.ExcludeMode.Never, retry = true, orsuccess = false)
     public class CheckContainer {
 
@@ -157,6 +171,9 @@ public class TruckAgentBDI {
 
     }
 
+    /**
+     * Goal of the truck to go for a deposit
+     */
     @Goal(excludemode = Goal.ExcludeMode.Never, retry = true, orsuccess = false)
     public class GoToDeposit {
 
@@ -173,46 +190,48 @@ public class TruckAgentBDI {
     /*-----------------------------
      Plans
     *---------------------------*/
+    /**
+     * Truck plan to wander around the city
+     * If city is on pause, plan just wait,
+     * else plan call updatePos() method and repaint
+     * the grid City
+     *
+     * @throws InterruptedException - If Thread.sleep launch an Excepection
+     */
     @Plan(trigger = @Trigger(goals = WanderAroundCity.class))
     protected void walkAroundCity() throws InterruptedException {
 
         do {
-            try {
-                Thread.sleep(SLEEP_LOW);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        } while (pause = GarbageCollector.getInstance().getPause());
+            Thread.sleep(SLEEP_LOW);
+        }while(pause = GarbageCollector.getInstance().getPause());
 
-        try {
-            switch (GarbageCollector.getInstance().getVelocity()){
-                case 1: Thread.sleep(SLEEP_LOW);
-                    System.out.println("LOW");break;
-                case 2: Thread.sleep(SLEEP_MEDIUM);
-                    System.out.println("MEDIUM");break;
-                case 3: Thread.sleep(SLEEP_FAST);
-                    System.out.println("FAST");break;
-                default: break;
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        Thread.sleep(SLEEP_LOW / GarbageCollector.getInstance().getVelocity());
 
         updatePos();
         gc.validate();
         gc.repaint();
-
     }
 
+    /**
+     * Truck plan to check a container.
+     * If the truck is adjacent to a container, he checks the type of the container.
+     * If the container have the same type, the tuck picks up the garbage;
+     * If the container has more garbage than the available capacity on the truck,
+     * the truck picks up the garbage until fill and leave the rest of the garbage on
+     * the container.
+     * If memory is being used and the truck doesn't know this container, he stores
+     * the container in memory
+     * If communication is being used and the container is not of the same type or if
+     * the truck is full, the truck sends a message to all the other trucks with the
+     * information about that container.
+     *
+     * @throws InterruptedException - If Thread.sleep launch an Excepection
+     */
     @Plan(trigger = @Trigger(goals = CheckContainer.class))
-    protected void checkContainer() {
+    protected void checkContainer() throws InterruptedException{
 
         do {
-            try {
-                Thread.sleep(SLEEP_LOW);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            Thread.sleep(SLEEP_LOW);
         } while (pause = GarbageCollector.getInstance().getPause());
 
         ArrayList<Container> adjacentsContainers = GarbageCollector.getInstance().checkAdjacentContainerPos(pos);
@@ -223,7 +242,6 @@ public class TruckAgentBDI {
                 if (adjacentsContainers.get(i).getType() == type) {
                     if (!collectorsInMemory.contains(adjacentsContainers.get(i).getPosition()) && GarbageCollector.getInstance().getMemory()) {
                         collectorsInMemory.add(adjacentsContainers.get(i).getPosition());
-                        //System.out.println("Adicionei a lista dos collectors que conheco o collector na posicao " + adjacentsCollectors.get(i).getPosition().x + "-" + adjacentsCollectors.get(i).getPosition().y);
                     }
 
                     if (occupiedCapacity < capacity) {
@@ -236,55 +254,37 @@ public class TruckAgentBDI {
                             occupiedCapacity += adjacentsContainers.get(i).getOccupiedCapacity();
                             adjacentsContainers.get(i).setOccupiedCapacity(0);
                         }
-                        try {
-                            switch (GarbageCollector.getInstance().getVelocity()){
-                                case 1: Thread.sleep(SLEEP_LOW);break;
-                                case 2: Thread.sleep(SLEEP_MEDIUM);break;
-                                case 3: Thread.sleep(SLEEP_FAST);break;
-                                default: break;
-                            }
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+
+                        Thread.sleep(SLEEP_LOW / GarbageCollector.getInstance().getVelocity());
+
                     }else{
-                        if(GarbageCollector.getInstance().getCommunication()){
-                            //TODO apanhar sempre, só quando tiver mais de metade ou só quando tiver cheio
-                            String message = "GARBAGE " +
-                                    GarbageCollector.getInstance().getMsgNr(true) + " " +
-                                    adjacentsContainers.get(i).getType() + " " +
-                                    adjacentsContainers.get(i).getOccupiedCapacity() + " " +
-                                    adjacentsContainers.get(i).getPosition().x + "-" + adjacentsContainers.get(i).getPosition().y;
-                            sendMessage(message, true);
-                            System.out.println("Mensagem inserida: " + (GarbageCollector.getInstance().getMsgNr(false)));
-                            GarbageCollector.getInstance().setClfm(GarbageCollector.getInstance().getMsgNr(false), pos);
-                        }
+                        prepareMessageAndSend(adjacentsContainers, i);
                     }
                 }else{
-                    if(GarbageCollector.getInstance().getCommunication()){
-                        String message = "GARBAGE " +
-                                GarbageCollector.getInstance().getMsgNr(true) + " " +
-                                adjacentsContainers.get(i).getType() + " " +
-                                adjacentsContainers.get(i).getOccupiedCapacity() + " " +
-                                adjacentsContainers.get(i).getPosition().x + "-" + adjacentsContainers.get(i).getPosition().y;
-                        sendMessage(message, true);
-                        System.out.println("Mensagem inserida: " + (GarbageCollector.getInstance().getMsgNr(false)));
-                        GarbageCollector.getInstance().setClfm(GarbageCollector.getInstance().getMsgNr(false), pos);
-                    }
+                    prepareMessageAndSend(adjacentsContainers, i);
                 }
             }
         }
     }
 
+    /**
+     * Truck plan to go a deposit
+     * If the truck is adjacent to a deposit, he checks the type of the container.
+     * If the deposit have the same type, the tuck drops the garbage;
+     * If memory is being used and the truck doesn't know this deposit, he stores
+     * the deposit in memory
+     *
+     * If truck is full and memory is being used and truck knows deposits
+     * he calculates the shortest path for deposits that he knows and go for the shorter
+     *
+     * @throws InterruptedException - If Thread.sleep launch an Excepection
+     */
     @Plan(trigger = @Trigger(goals = GoToDeposit.class))
-    protected void GoToDeposit() {
+    protected void GoToDeposit() throws InterruptedException{
 
         do {
-            try {
-                Thread.sleep(SLEEP_LOW);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        } while (GarbageCollector.getInstance().getPause());
+            Thread.sleep(SLEEP_LOW);
+        }while(GarbageCollector.getInstance().getPause());
 
         if (occupiedCapacity == capacity && !depositsInMemory.isEmpty() && !mission) {
             this.steps = getShortestPath(depositsInMemory);
@@ -298,27 +298,15 @@ public class TruckAgentBDI {
 
                 if (adjacentDeposits.get(i).getType() == type && occupiedCapacity != 0) {
                     adjacentDeposits.get(i).setOccupiedCapacity(adjacentDeposits.get(i).getOccupiedCapacity() + occupiedCapacity);
+                    GarbageCollector.getInstance().setWasteQuantity(type, occupiedCapacity);
                     occupiedCapacity = 0;
                     steps.clear();
                     mission = false;
-                    try {
-                        switch (GarbageCollector.getInstance().getVelocity()){
-                            case 1: Thread.sleep(SLEEP_LOW);
-                                System.out.println("LOW");break;
-                            case 2: Thread.sleep(SLEEP_MEDIUM);
-                                System.out.println("MEDIUM");break;
-                            case 3: Thread.sleep(SLEEP_FAST);
-                                System.out.println("FAST");break;
-                            default: break;
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                    Thread.sleep(SLEEP_LOW / GarbageCollector.getInstance().getVelocity());
                 }
 
                 if (!depositsInMemory.contains(adjacentDeposits.get(i).getPosition()) && GarbageCollector.getInstance().getMemory() && adjacentDeposits.get(i).getType() == type) {
                     depositsInMemory.add(adjacentDeposits.get(i).getPosition());
-                    System.out.println(name + ": Adicionei a lista dos depositos que conheco o deposito na posicao " + adjacentDeposits.get(i).getPosition().x + "-" + adjacentDeposits.get(i).getPosition().y);
                 }
             }
         }
@@ -328,12 +316,32 @@ public class TruckAgentBDI {
     /*-----------------------------
        Methods
     *---------------------------*/
-
-
-    public void setPause(boolean pause) {
-        this.pause = pause;
+    /**
+     * Method that is responsible for create a message and send to all trucks
+     *
+     * @param adjacentsContainers - information about the cointainers
+     * @param i - index of container on adjacentsContainers
+     */
+    private void prepareMessageAndSend(ArrayList<Container> adjacentsContainers, int i) {
+        if(GarbageCollector.getInstance().getCommunication()){
+            String message = "GARBAGE " +
+                    GarbageCollector.getInstance().getMsgNr(true) + " " +
+                    adjacentsContainers.get(i).getType() + " " +
+                    adjacentsContainers.get(i).getOccupiedCapacity() + " " +
+                    adjacentsContainers.get(i).getPosition().x + "-" + adjacentsContainers.get(i).getPosition().y;
+            sendMessage(message, true);
+            GarbageCollector.getInstance().setClfm(GarbageCollector.getInstance().getMsgNr(false), pos);
+        }
     }
 
+    /**
+     * Method that is responsible for updating the position of trucks.
+     * If the truck has a mission he gives update to the next position based
+     * on a list of steps, otherwise the truck moves randomly without repeating
+     * the previous position, except in extreme case (if is the only possibility)
+     *
+     * @throws InterruptedException - If Thread.sleep launch an Excepection
+     */
     public void updatePos() throws InterruptedException {
 
         // have a trip to do
@@ -343,10 +351,13 @@ public class TruckAgentBDI {
             mission = false;
             ArrayList<Position> neighbors = autoMove();
             Position aux;
+            // repeat last position if is the only possibility
             if (neighbors.size() == 1) {
                 lastPos = pos;
                 pos = neighbors.get(0);
             } else {
+
+                // choose a position without repeat the previous
                 do {
                     aux = neighbors.get(((int) (Math.random() * 1000) % neighbors.size()));
                 } while (aux.equals(lastPos));
@@ -356,6 +367,11 @@ public class TruckAgentBDI {
         }
     }
 
+    /**
+     * Method that returns a list of all the positions that are connected
+     *
+     * @return - the list with of Positions
+     */
     public ArrayList<Position> autoMove() {
         ArrayList<Position> neighbors = new ArrayList<>();
         if (isConnected(pos, new Position(pos.x, pos.y - 1))) neighbors.add(new Position(pos.x, pos.y - 1));
@@ -363,16 +379,15 @@ public class TruckAgentBDI {
         if (isConnected(pos, new Position(pos.x, pos.y + 1))) neighbors.add(new Position(pos.x, pos.y + 1));
         if (isConnected(pos, new Position(pos.x - 1, pos.y))) neighbors.add(new Position(pos.x - 1, pos.y));
 
-        //if(neighbors.size() == 1)
         return neighbors;
-        // else
-        // return neighbors.get(((int)(Math.random() * 1000) % neighbors.size()));
     }
 
-    public boolean PositionComparison(Position pos1, Position pos2) {
-        return pos1.equals(pos2);
-    }
-
+    /**
+     * Method that checks if a given position is a road
+     *
+     * @param pos - the position to check
+     * @return - true if is road, false otherwise
+     */
     public boolean isRoad(Position pos) {
         Vertex v = gc.getCtB().getVertexByCoords(pos.x, pos.y);
         if (v != null)
@@ -381,6 +396,14 @@ public class TruckAgentBDI {
             return false;
     }
 
+    /**
+     * Method that checks if 2 positions are connected, i.e.,
+     * if both positions have an Edge between on the graph
+     *
+     * @param orig - original Position
+     * @param dest - destination
+     * @return - true if they are connected, false otherwise
+     */
     public boolean isConnected(Position orig, Position dest) {
         Vertex origin = gc.getCtB().getVertexByCoords(orig.x, orig.y);
         Vertex destination = gc.getCtB().getVertexByCoords(dest.x, dest.y);
@@ -388,31 +411,22 @@ public class TruckAgentBDI {
         return gc.getCtB().getGraph().getEdge(origin, destination) != null;
     }
 
-    public Position getPosition() {
-        return pos;
-    }
-
-
-    public GarbageCollector.typeOfWaste getType() {
-        return type;
-    }
-
+    /**
+     * Method that calculates the ShortestPath for a position,
+     * from the actual position of the truck.
+     *
+     * @param dest - destination Position
+     * @return - ArrayList of Positions with all the steps to go for dest
+     */
     public ArrayList<Position> getShortestPath(Position dest) {
         ArrayList<Position> path = new ArrayList<>();
 
         ArrayList<Position> neighbors = new ArrayList<>();
 
-        if (isRoad(new Position(dest.x, dest.y - 1)))
-            neighbors.add(new Position(dest.x, dest.y - 1));
-
-        if (isRoad(new Position(dest.x + 1, dest.y)))
-            neighbors.add(new Position(dest.x + 1, dest.y));
-
-        if (isRoad(new Position(dest.x, dest.y + 1)))
-            neighbors.add(new Position(dest.x, dest.y + 1));
-
-        if (isRoad(new Position(dest.x - 1, dest.y)))
-            neighbors.add(new Position(dest.x - 1, dest.y));
+        if (isRoad(new Position(dest.x, dest.y - 1))) neighbors.add(new Position(dest.x, dest.y - 1));
+        if (isRoad(new Position(dest.x + 1, dest.y))) neighbors.add(new Position(dest.x + 1, dest.y));
+        if (isRoad(new Position(dest.x, dest.y + 1))) neighbors.add(new Position(dest.x, dest.y + 1));
+        if (isRoad(new Position(dest.x - 1, dest.y))) neighbors.add(new Position(dest.x - 1, dest.y));
 
         int min = Integer.MAX_VALUE;
         int minIndex = 0;
@@ -436,6 +450,14 @@ public class TruckAgentBDI {
         return path;
     }
 
+    /**
+     * Method that calculates the ShortestPath for a list of positions
+     * from the actual position of the truck.
+     *
+     * @param dest - destination Positions
+     * @return - ArrayList of Positions with all the steps to go for dest
+     * for the shortest destination present on dest
+     */
     public ArrayList<Position> getShortestPath(ArrayList<Position> dest) {
 
         ArrayList<ArrayList<Position>> paths = new ArrayList<>();
@@ -455,28 +477,20 @@ public class TruckAgentBDI {
         return paths.get(minIndex);
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public int getCapacity() {
-        return capacity;
-    }
-
-    public int getOccupiedCapacity() {
-        return occupiedCapacity;
-    }
-
+    /**
+     * Method responsible for receiving a message when communication
+     * is being used.
+     *
+     * @param name - the truck that sends the message
+     * @param message - the message
+     * @param original - true if is the original message, false otherwise
+     */
     public void getMessage(String name, String message, boolean original) {
 
-
         if(occupiedCapacity < capacity && name != this.name){
-            System.out.println(this.name+":"+ " Recebi de " + name + " a mensagem: " + message);
             String[] msg = message.split(" ");
-            if(original) {
-                System.out.println("1");
+            if(original) { //if is the original message, parse it and answer
                 if(msg[0].equals("GARBAGE") && msg[2].equals(type.toString())){
-                    System.out.println("2");
                     String[] position = msg[4].split("-");
                     Position aux_pos = new Position(Integer.parseInt(position[0]), Integer.parseInt(position[1]));
                     int distance = getShortestPath(aux_pos).size();
@@ -487,13 +501,10 @@ public class TruckAgentBDI {
                     Thread t = new Thread(wt);
                     t.start();
                 }
-            }else{
-                System.out.println("Recebi uma mensagem que nao era original e que nao era minha");
+            }else{ // otherwise, check if anyone is close to the destination
                 if(messages.get(Integer.parseInt(msg[1])) != null){
-                    System.out.println("Essa mensagem estava no meu mapa de mensagens");
                     Integer distance = Integer.parseInt(msg[2]);
                     Integer myD = messages.get(Integer.parseInt(msg[1]));
-                    System.out.println("Distancia : " + distance +"; Minha distancia: " + myD);
                     if(distance < myD)
                         messages.remove(Integer.parseInt(msg[1]));
                 }
@@ -501,6 +512,13 @@ public class TruckAgentBDI {
         }
     }
 
+    /**
+     * Method responsible for receiving a message when communication
+     * is being used. Send the message via ACS of jadex (IChatService)
+     *
+     * @param message - message to be send
+     * @param original - true if is the original message, false otherwis
+     */
     public void sendMessage(final String message, final boolean original){
 
         IFuture<Collection<IChatService>> cs = agent.getServiceContainer().getRequiredServices("chat");
@@ -515,6 +533,12 @@ public class TruckAgentBDI {
         });
     }
 
+    /**
+     * Method which has a thread waiting 2,5seconds for answers to see if other truck
+     * is closer to a container. If any truck is close to that container, the own truck
+     * goes to that container in a mission.
+     *
+     */
     public class WaitABit implements Runnable{
 
         private Integer msgNr;
@@ -528,8 +552,6 @@ public class TruckAgentBDI {
         @Override
         public void run() {
 
-            System.out.println("Vou esperar respostas durante 5s");
-
             do {
                 try {
                     Thread.sleep(SLEEP_LOW);
@@ -540,21 +562,68 @@ public class TruckAgentBDI {
 
 
             try {
-                Thread.sleep(5000);
+                Thread.sleep(2500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
 
             if(truck.messages.get(msgNr) != null){
-                System.out.println("Tenho a mensagem, vou calcular o caminho mais curto para la e vou - " + truck.name);
                 Position position = GarbageCollector.getInstance().getClfmGivingNr(msgNr);
-                System.out.println(position);
                 truck.steps = truck.getShortestPath(position);
                 truck.mission = true;
             }
 
         }
+    }
+
+
+    /*-----------------------------
+       Getters and Setters
+    *---------------------------*/
+    /**
+     * Method that returns the truck name identifier
+     *
+     * @return - name of the truck
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Method that returns the capacity of the truck
+     *
+     * @return - capacity of the truck
+     */
+    public int getCapacity() {
+        return capacity;
+    }
+
+    /**
+     * Method that returns the actual occupied capacity of the truck
+     *
+     * @return - occupied capacity of the truck
+     */
+    public int getOccupiedCapacity() {
+        return occupiedCapacity;
+    }
+
+    /**
+     * Method that returns the position of the truck
+     *
+     * @return - the position of the truck
+     */
+    public Position getPosition() {
+        return pos;
+    }
+
+    /**
+     * Method that returns the type of the truck
+     *
+     * @return - the type of the truck
+     */
+    public GarbageCollector.typeOfWaste getType() {
+        return type;
     }
 
 }

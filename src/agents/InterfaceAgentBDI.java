@@ -3,19 +3,20 @@ package agents;
 import gui.Interface;
 import jadex.bdiv3.BDIAgent;
 import jadex.bdiv3.annotation.*;
-import jadex.bridge.IComponentIdentifier;
-import jadex.bridge.service.*;
-import jadex.bridge.service.search.SServiceProvider;
-import jadex.bridge.service.types.cms.*;
-import jadex.commons.future.ThreadSuspendable;
 import jadex.micro.annotation.*;
 import main.GarbageCollector;
 import main.Position;
 import java.io.FileNotFoundException;
 
+/**
+ * Class responsible for create an Interface agent and launch the Interface
+ *
+ * @author Rui Grandão  - ei11010@fe.up.pt
+ * @author Tiago Coelho - ei11012@fe.up.pt
+ *
+ */
 @Agent
 @Description("Agent that starts an interface and update the elements on the map.")
-
 public class InterfaceAgentBDI {
 
     /*------------------------------
@@ -25,8 +26,6 @@ public class InterfaceAgentBDI {
 
     @Agent
     protected BDIAgent agent;
-
-    protected Position[] truckLoc;
 
     @Belief
     protected Interface graphicInt;
@@ -39,8 +38,12 @@ public class InterfaceAgentBDI {
 
 
     /*------------------------------
-        Agent Body
+        Agent
     *-----------------------------*/
+    /**
+     * Method invoked emmediately after truck Agent creation.
+     * Launch Interface and start agent's goals.
+     */
     @AgentBody
     public void body(){
         try {
@@ -53,24 +56,38 @@ public class InterfaceAgentBDI {
         agent.dispatchTopLevelGoal(new AGoal()).get();
     }
 
+    /**
+     * Method invoked when agent is killed
+     */
+    @AgentKilled
+    public void killed() {
+        System.out.println("Killed agent" + agent.getAgentName());
+    }
+
+
     /*-----------------------------
        Plans
      *---------------------------*/
+    /**
+     * Interface plan to update the city on the interface
+     *
+     * @throws InterruptedException - If Thread.sleep launch an Excepection
+     */
     @Plan(trigger=@Trigger(goals=AGoal.class))
-    protected void basicPlan() {
+    protected void basicPlan() throws  InterruptedException{
+
         intAgent.updateCity();
 
-       // System.out.println("UpdateCity");
-        try {
-            Thread.sleep(SLEEP);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        Thread.sleep(SLEEP);
+
     }
 
     /*-----------------------------
        Goals
      *---------------------------*/
+    /**
+     * Goal of the interface agente to updates interface
+     */
     @Goal(excludemode = Goal.ExcludeMode.Never, retry = true, orsuccess = false)
     public class AGoal {
 
@@ -87,41 +104,13 @@ public class InterfaceAgentBDI {
     /*-----------------------------
         Methods
      *---------------------------*/
-    public void deployAgent(String path, jadex.bridge.service.types.cms.CreationInfo info){
-
-        System.out.println("Cheguei ao deployAgent");
-
-        ThreadSuspendable sus = new ThreadSuspendable();
-        IServiceProvider sp = agent.getServiceProvider();
-
-       IComponentManagementService cms = null;
-        try{
-            cms = SServiceProvider.getService(sp, IComponentManagementService.class,
-                    RequiredServiceInfo.SCOPE_PLATFORM).get(sus);
-        }catch (NullPointerException e){
-            e.printStackTrace();
-        }
-
-        IComponentIdentifier ici = cms.createComponent(path, info).getFirstResult(sus);
-        System.out.println("started: " + ici);
-    }
-
+    /**
+     * Method that validate and repaint the city on the interface
+     */
     public void updateCity(){
         graphicInt.validate();
         graphicInt.repaint();
     }
 
-    public InterfaceAgentBDI getIntAgent() {
-        return intAgent;
-    }
-
-    public void setIntAgent(InterfaceAgentBDI intAgent) {
-        this.intAgent = intAgent;
-    }
-
-    @AgentKilled
-    public void killed(){
-        System.out.println("Killed agent" + agent.getAgentName());
-    }
 
 }

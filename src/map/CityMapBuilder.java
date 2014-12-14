@@ -7,10 +7,20 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Class responsible for make a city based on a file
+ *
+ * @author Rui Grandão  - ei11010@fe.up.pt
+ * @author Tiago Coelho - ei11012@fe.up.pt
+ */
 public class CityMapBuilder extends MapBuilder {
 
     Map<String, Vertex> vertexMap;
 
+    /**
+     * Default constructor to CityMapBuilder
+     * @param f - the file to parse
+     */
     public CityMapBuilder(File f) {
         super(f);
         vertexMap = new HashMap<>();
@@ -58,6 +68,12 @@ public class CityMapBuilder extends MapBuilder {
         }
     }
 
+    /**
+     * Method that returns a Vertex given an position
+     * @param x - pos x
+     * @param y - pos y
+     * @return - Vertex if exists, null otherwise
+     */
     public Vertex getVertexByCoords(int x, int y){
         for( Vertex v : vertexMap.values() ){
             if( v.isAt(x,y) ) {
@@ -66,12 +82,33 @@ public class CityMapBuilder extends MapBuilder {
         }
         return null;
     }
+
+    /**
+     * Method that return a Vertex present on a VertexMap, given his key
+     *
+     * @param key - the key
+     * @return - the Vertex
+     */
     public Vertex getVertexByName(String key) {
         return this.vertexMap.get(key);
     }
+
+    /**
+     *
+     *
+     * @return
+     */
     public Collection<Vertex> getVertices() {
         return this.vertexMap.values();
     }
+
+    /**
+     * Method that check neighbors for a given position
+     * @param x - x pos
+     * @param y - y pos
+     * @param c - char identifier of the vertex
+     * @return - true if has neighbors, false otherwise
+     */
     public boolean checkNeighborsFor(int x, int y, char c){
         // left
         if( getVertexByCoords(x-1, y) != null )

@@ -7,20 +7,36 @@ import org.jgrapht.graph.ListenableDirectedGraph;
 import java.io.*;
 import java.util.ArrayList;
 
+/**
+ * Class responsible for build a map
+ *
+ * @author Rui Grandão  - ei11010@fe.up.pt
+ * @author Tiago Coelho - ei11012@fe.up.pt
+ */
 public class MapBuilder {
+
 
     private ListenableDirectedGraph<Vertex, DefaultEdge> g;
     private ArrayList<String> verticesRef;
     private ArrayList<Pair<String, String>> edgesRef;
 
+    /**
+     * Default constructor
+     */
     public MapBuilder(){
         this.g = new ListenableDirectedGraph<>( DefaultEdge.class );
         this.verticesRef = new ArrayList<>();
         this.edgesRef = new ArrayList<>();
     }
 
-    // Contructor with no arguments creates a default graph
-    // Mode - 0 -> empty | 1 -> vertices | 2 -> verticesAndEdges
+
+
+    /**
+     *  // Contructor with no arguments creates a default graph
+     *  Mode - 0 -> empty | 1 -> vertices | 2 -> verticesAndEdges
+     *
+     * @param mode - mode
+     */
     public MapBuilder(int mode){
         // Hard Code Graph Here //
         // Initialize fields
@@ -57,14 +73,14 @@ public class MapBuilder {
         }
     }
 
-    // Contructor that builds a graph from a file
+    /**
+     * Contructor that builds a graph from a file
+     * @param f - the file
+     */
     public MapBuilder(File f) {
 
         // Initialize fields
         this();
-
-      //  System.out.println("Creating graph from file " + f.getName() + ".");
-
         BufferedReader fis = null;
 
         try {
@@ -78,9 +94,7 @@ public class MapBuilder {
 
             for(String s: vertices.split(", ")){
                 if(!s.isEmpty()) {
-                   // System.out.println("\tAdding vertex (" + s + ") to graph.");
                     verticesRef.add(s);
-                    // this.g.addVertex(s);
                 }
             }
 
@@ -91,9 +105,7 @@ public class MapBuilder {
             for(String s: edges.split("\\),")){
                 if(!s.isEmpty()) {
                     s = s.replace("(", " ").replace(")", " ").trim();
-                   // System.out.println("\tAdding edge (" + s.split(",")[0] + "->" + s.split(",")[1] + ") to graph.");
                     edgesRef.add(new Pair<>(s.split(",")[0], s.split(",")[1]));
-                    // this.g.addEdge(s.split(",")[0], s.split(",")[1]);
                 }
             }
 
@@ -113,9 +125,23 @@ public class MapBuilder {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public ListenableDirectedGraph<Vertex, DefaultEdge> getGraph() {
         return g;
     }
+
+    /**
+     *
+     * @return
+     */
     public ArrayList<String> getVerticesRef() { return verticesRef; }
+
+    /**
+     *
+     * @return
+     */
     public ArrayList<Pair<String, String>> getEdgesRef() { return edgesRef; }
 }
