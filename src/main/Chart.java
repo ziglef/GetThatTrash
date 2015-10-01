@@ -50,6 +50,10 @@ public class Chart implements Runnable {
         t.start();
     }
 
+    public JPanel getChartPanel() {
+        return this.chartPanel;
+    }
+
     private JPanel createChartPanel() {
 
         JFreeChart chart = createChart(dataset);
